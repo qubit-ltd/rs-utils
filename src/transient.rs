@@ -7,10 +7,7 @@
 // =============================================================================
 //! Runtime-only values whose contents do not participate in value semantics.
 
-use std::hash::{
-    Hash,
-    Hasher,
-};
+use std::hash::{Hash, Hasher};
 
 /// Stores runtime state that is intentionally excluded from a parent value's
 /// equality and hash semantics.
@@ -21,11 +18,19 @@ use std::hash::{
 /// and other derived runtime state that must not change the identity of the
 /// containing value.
 ///
+/// Typical scenarios:
+///
+/// - request contexts that cache computed values (`HashMap`, `Vec`, etc.),
+/// - non-semantic feature toggles (`debug`, `hot`, `trace`) affecting runtime
+///   behavior but not identity,
+/// - ephemeral handles (`Arc`, file descriptors, counters) that should not break
+///   equality semantics.
+///
 /// The container does not implement Serde's `Serialize` or `Deserialize`.
-/// A parent type using Serde derive must mark a transient field with
-/// `#[serde(skip, default)]`; a custom wire representation must omit the field
-/// explicitly. The inner value is therefore not automatically persisted or
-/// restored.
+/// A parent type using Serde derive should mark a transient field with
+/// `#[serde(skip, default)]`; wire formats should not include it implicitly.
+/// The inner value is therefore excluded from persistence unless serialized
+/// manually.
 ///
 /// # Examples
 ///
@@ -54,6 +59,27 @@ use std::hash::{
 /// };
 /// let encoded = serde_json::to_string(&settings).expect("settings serialize");
 /// assert_eq!(encoded, r#"{"name":"demo"}"#);
+/// ```
+///
+/// ```rust
+/// use qubit_utils::Transient;
+///
+/// #[derive(Clone, Default)]
+/// struct DecodeState {
+///     bytes: usize,
+/// }
+///
+/// #[derive(Default)]
+/// struct Decoder {
+///     // Not part of logical decoder identity.
+///     stats: Transient<DecodeState>,
+/// }
+///
+/// impl Decoder {
+///     fn read_chunk(&mut self, chunk: usize) {
+///         self.stats.get_mut().bytes += chunk;
+///     }
+/// }
 /// ```
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug)]

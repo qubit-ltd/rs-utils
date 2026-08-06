@@ -6,9 +6,9 @@
 //    Licensed under the Apache License, Version 2.0.
 // =============================================================================
 
-use qubit_utils::UncheckedSlice;
+use qubit_utils::SliceRange;
 
 #[test]
 fn test_unchecked_slice_range_validation_rejects_overflow() {
-    assert!(!UncheckedSlice::range_fits(4, usize::MAX, 1));
+    assert!(!SliceRange::range_fits(4, usize::MAX, 1));
 }

@@ -19,16 +19,22 @@
 
 ## 当前状态
 
-首个版本仅包含 crate 基础结构，暂未提供具体的工具函数或类型。
+当前版本已提供可直接使用的通用 API：
+
+- 可恢复分配接口：`create_vec`、`try_reserve_vec`、`try_reserve_string`、
+  `allocation_error`，以及 `coverage` 特性下的测试辅助接口；
+- `nonzero`：用于构造 `NonZeroUsize` 的公开函数；
+- `Transient<T>`：用于表示“运行时临时状态”的包装类型（不参与 `Eq`/`Hash`）；
+- `UncheckedSlice` 与 `SliceRange`：低层 slice 范围与无边界检查操作工具。
 
 ## 能力
 
-- 提供用于承载后续通用工具的标准 Rust library crate。
-- 初始版本不引入第三方依赖。
+提供依赖非常轻量、可直接复用的通用基础能力，持续服务于 Qubit 的 Rust
+生态项目。
 
 ## 限制
 
-首个版本尚未提供具体的公共工具 API。
+当前公开 API 刻意保持精简，侧重底层公共能力，后续功能会按使用场景逐步补充。
 
 ## 测试
 

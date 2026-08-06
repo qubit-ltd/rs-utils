@@ -22,17 +22,22 @@ is available.
 
 ## Current Status
 
-The initial release contains the crate foundation only. It does not yet expose
-concrete utility functions or types.
+The crate is in early release with several stable utility APIs available for reuse:
+
+- fallible allocation helpers (`create_vec`, `try_reserve_vec`, `try_reserve_string`,
+  `allocation_error`, plus coverage-testing helpers under `coverage` cfg),
+- `nonzero` helper for `NonZeroUsize`,
+- `Transient<T>` for runtime-only state excluded from `Eq`/`Hash`,
+- `UncheckedSlice` and `SliceRange` for low-level slice/array boundary checks.
 
 ## Capabilities
 
-- Provides a standard Rust library crate for future general-purpose utilities.
-- Keeps the initial dependency surface empty.
+Provides reusable, dependency-light helpers used by adjacent Qubit Rust crates.
 
 ## Limitations
 
-No concrete public utility API is available in the initial release.
+The API set is focused and intentionally small; additional domain-specific
+helpers are expected to evolve from real usage requirements.
 
 ## Testing
 

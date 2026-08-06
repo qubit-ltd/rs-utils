@@ -10,13 +10,9 @@
 //! These helpers avoid bound checks and are intended for call sites that
 //! already validate bounds in their own protocol.
 
+use crate::SliceRange;
 use core::mem;
 use std::convert::Infallible;
-use std::io::{
-    Error,
-    ErrorKind,
-    Result,
-};
 
 /// Namespace for low-level slice operations without bound checks.
 ///
@@ -28,77 +24,6 @@ pub struct UncheckedSlice {
 }
 
 impl UncheckedSlice {
-    /// Returns the exclusive end index of a checked slice range.
-    ///
-    /// # Parameters
-    ///
-    /// - `len`: Slice length.
-    /// - `start`: Start index in the slice.
-    /// - `count`: Number of requested items after `start`.
-    ///
-    /// # Returns
-    ///
-    /// `Some(end)` if `start + count <= len` and no overflow occurs, or
-    /// `None` when the requested range does not fit inside the slice.
-    #[inline]
-    pub const fn range_end(
-        len: usize,
-        start: usize,
-        count: usize,
-    ) -> Option<usize> {
-        match start.checked_add(count) {
-            Some(end) if len >= end => Some(end),
-            _ => None,
-        }
-    }
-
-    /// Returns whether a slice has at least `count` readable/writable items
-    /// from `start`.
-    ///
-    /// # Parameters
-    ///
-    /// - `len`: Slice length.
-    /// - `start`: Start index in the slice.
-    /// - `count`: Number of requested items after `start`.
-    ///
-    /// # Returns
-    ///
-    /// `true` if `start + count <= len` and no overflow occurs.
-    #[must_use]
-    #[inline(always)]
-    pub const fn range_fits(len: usize, start: usize, count: usize) -> bool {
-        Self::range_end(len, start, count).is_some()
-    }
-
-    /// Returns the exclusive end index of a checked slice range as an I/O
-    /// result.
-    ///
-    /// # Parameters
-    ///
-    /// - `len`: Slice length.
-    /// - `start`: Start index in the slice.
-    /// - `count`: Number of requested items after `start`.
-    /// - `message`: Error message used when the requested range is invalid.
-    ///
-    /// # Returns
-    ///
-    /// Returns the exclusive end index when the range fits inside the slice.
-    ///
-    /// # Errors
-    ///
-    /// Returns [`ErrorKind::InvalidInput`] with `message` when
-    /// `start + count` overflows or exceeds `len`.
-    #[inline]
-    pub fn checked_range_end(
-        len: usize,
-        start: usize,
-        count: usize,
-        message: &'static str,
-    ) -> Result<usize> {
-        Self::range_end(len, start, count)
-            .ok_or_else(|| Error::new(ErrorKind::InvalidInput, message))
-    }
-
     /// Reads one value from an unchecked slice index.
     ///
     /// # Type Parameters
@@ -230,7 +155,7 @@ impl UncheckedSlice {
     #[inline(always)]
     pub unsafe fn subslice<T>(input: &[T], start: usize, count: usize) -> &[T] {
         debug_assert!(
-            Self::range_fits(input.len(), start, count),
+            SliceRange::range_fits(input.len(), start, count),
             "subslice range exceeds input buffer"
         );
         // SAFETY: The caller guarantees that the range is valid inside `input`.
@@ -264,23 +189,14 @@ impl UncheckedSlice {
     /// the addition does not overflow.
     #[must_use]
     #[inline(always)]
-    pub unsafe fn subslice_mut<T>(
-        output: &mut [T],
-        start: usize,
-        count: usize,
-    ) -> &mut [T] {
+    pub unsafe fn subslice_mut<T>(output: &mut [T], start: usize, count: usize) -> &mut [T] {
         debug_assert!(
-            Self::range_fits(output.len(), start, count),
+            SliceRange::range_fits(output.len(), start, count),
             "subslice range exceeds output buffer"
         );
         // SAFETY: The caller guarantees that the range is valid inside
         // `output`.
-        unsafe {
-            core::slice::from_raw_parts_mut(
-                output.as_mut_ptr().add(start),
-                count,
-            )
-        }
+        unsafe { core::slice::from_raw_parts_mut(output.as_mut_ptr().add(start), count) }
     }
 
     /// Copies `count` values between unchecked slice offsets.
@@ -317,11 +233,11 @@ impl UncheckedSlice {
         count: usize,
     ) {
         debug_assert!(
-            Self::range_fits(source.len(), source_index, count),
+            SliceRange::range_fits(source.len(), source_index, count),
             "unchecked source range exceeds source buffer"
         );
         debug_assert!(
-            Self::range_fits(destination.len(), destination_index, count),
+            SliceRange::range_fits(destination.len(), destination_index, count),
             "unchecked destination range exceeds destination buffer"
         );
         // SAFETY: The caller guarantees both ranges are valid and
@@ -367,11 +283,11 @@ impl UncheckedSlice {
         count: usize,
     ) {
         debug_assert!(
-            Self::range_fits(buffer.len(), source_index, count),
+            SliceRange::range_fits(buffer.len(), source_index, count),
             "unchecked source range exceeds buffer"
         );
         debug_assert!(
-            Self::range_fits(buffer.len(), destination_index, count),
+            SliceRange::range_fits(buffer.len(), destination_index, count),
             "unchecked destination range exceeds buffer"
         );
         // SAFETY: The caller guarantees both ranges are valid; `copy` supports
@@ -421,7 +337,7 @@ impl UncheckedSlice {
     #[inline(always)]
     pub unsafe fn read_ne_unaligned<T: Copy>(input: &[u8], index: usize) -> T {
         debug_assert!(
-            Self::range_fits(input.len(), index, mem::size_of::<T>()),
+            SliceRange::range_fits(input.len(), index, mem::size_of::<T>()),
             "unchecked input range exceeds source buffer"
         );
         // SAFETY: The caller guarantees byte-level validity for this unaligned
@@ -461,13 +377,9 @@ impl UncheckedSlice {
     /// bytewise representation. Types containing padding, references, or
     /// pointers require additional justification from the caller.
     #[inline(always)]
-    pub unsafe fn write_ne_unaligned<T: Copy>(
-        output: &mut [u8],
-        index: usize,
-        value: T,
-    ) {
+    pub unsafe fn write_ne_unaligned<T: Copy>(output: &mut [u8], index: usize, value: T) {
         debug_assert!(
-            Self::range_fits(output.len(), index, mem::size_of::<T>()),
+            SliceRange::range_fits(output.len(), index, mem::size_of::<T>()),
             "unchecked output range exceeds destination buffer"
         );
         // SAFETY: The caller guarantees byte-level validity for this unaligned

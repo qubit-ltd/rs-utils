@@ -5,7 +5,7 @@
 //
 //    Licensed under the Apache License, Version 2.0.
 // =============================================================================
-use qubit_utils::UncheckedSlice;
+use qubit_utils::{SliceRange, UncheckedSlice};
 
 #[test]
 fn test_read_unchecked_reads_value() {
@@ -27,13 +27,7 @@ fn test_write_unchecked_moves_non_copy_value() {
         String::from("middle"),
         String::from("right"),
     ];
-    unsafe {
-        qubit_utils::UncheckedSlice::write(
-            &mut output,
-            1,
-            String::from("updated"),
-        )
-    };
+    unsafe { qubit_utils::UncheckedSlice::write(&mut output, 1, String::from("updated")) };
     assert_eq!(output[1], "updated");
 }
 
@@ -54,22 +48,21 @@ fn test_mut_unchecked_writes_reference() {
 
 #[test]
 fn test_range_fits_checks_range() {
-    assert!(UncheckedSlice::range_fits(8, 2, 6));
-    assert!(!UncheckedSlice::range_fits(8, 3, 6));
+    assert!(SliceRange::range_fits(8, 2, 6));
+    assert!(!SliceRange::range_fits(8, 3, 6));
 }
 
 #[test]
 fn test_range_end_returns_exclusive_end_index() {
-    assert_eq!(UncheckedSlice::range_end(8, 2, 6), Some(8));
-    assert_eq!(UncheckedSlice::range_end(8, 3, 6), None);
-    assert_eq!(UncheckedSlice::range_end(8, usize::MAX, 1), None);
+    assert_eq!(SliceRange::range_end(8, 2, 6), Some(8));
+    assert_eq!(SliceRange::range_end(8, 3, 6), None);
+    assert_eq!(SliceRange::range_end(8, usize::MAX, 1), None);
 }
 
 #[test]
 fn test_checked_range_end_returns_io_error() {
-    let error =
-        UncheckedSlice::checked_range_end(8, 3, 6, "range exceeds buffer")
-            .expect_err("invalid range should return an I/O error");
+    let error = SliceRange::checked_range_end(8, 3, 6, "range exceeds buffer")
+        .expect_err("invalid range should return an I/O error");
 
     assert_eq!(error.kind(), std::io::ErrorKind::InvalidInput);
     assert_eq!(error.to_string(), "range exceeds buffer");
@@ -86,16 +79,12 @@ fn test_ne_unaligned_unchecked_reads_and_writes() {
     let mut output = [0_u8; 8];
     // SAFETY: Writes a little-endian u16 to valid unaligned offset 1.
     unsafe {
-        qubit_utils::UncheckedSlice::write_ne_unaligned(
-            &mut output,
-            1,
-            0x1234_u16,
-        );
+        qubit_utils::UncheckedSlice::write_ne_unaligned(&mut output, 1, 0x1234_u16);
         let value = UncheckedSlice::read_ne_unaligned::<u16>(&output, 1);
         assert_eq!(value, 0x1234_u16);
     }
-    assert_eq!(output[1], 0x34);
-    assert_eq!(output[2], 0x12);
+    let expected = 0x1234_u16.to_ne_bytes();
+    assert_eq!(&output[1..3], expected.as_slice());
 }
 
 #[test]
@@ -108,8 +97,7 @@ fn test_subslice_returns_range() {
 #[test]
 fn test_subslice_mut_returns_mutable_range() {
     let mut output = [1_u8, 2, 3, 4, 5];
-    let slice =
-        unsafe { qubit_utils::UncheckedSlice::subslice_mut(&mut output, 2, 2) };
+    let slice = unsafe { qubit_utils::UncheckedSlice::subslice_mut(&mut output, 2, 2) };
     slice.copy_from_slice(&[8, 9]);
     assert_eq!(output, [1, 2, 8, 9, 5]);
 }
@@ -119,13 +107,7 @@ fn test_copy_nonoverlapping_unchecked_copies_slice() {
     let source = [1_u8, 2, 3, 4];
     let mut destination = [0_u8, 0, 0, 0];
     unsafe {
-        qubit_utils::UncheckedSlice::copy_nonoverlapping(
-            &source,
-            0,
-            &mut destination,
-            0,
-            4,
-        );
+        qubit_utils::UncheckedSlice::copy_nonoverlapping(&source, 0, &mut destination, 0, 4);
     }
     assert_eq!(destination, source);
 }
