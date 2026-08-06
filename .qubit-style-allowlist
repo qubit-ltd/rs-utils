@@ -1,0 +1,2 @@
+coverage-cfg | src/lib.rs | Re-export coverage-only allocation failure hooks for integration tests.
+coverage-cfg | src/allocation.rs | Inject thread-local reserve failure hooks so allocation error propagation paths can be exercised under coverage builds.
