@@ -1,0 +1,31 @@
+[package]
+name = "qubit-utils"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.94"
+autotests = false
+authors = ["Haixing Hu <starfish.hu@gmail.com>"]
+license = "Apache-2.0"
+repository = "https://github.com/qubit-ltd/rs-utils"
+description = "General-purpose utilities for Rust projects"
+homepage = "https://qubit-ltd.github.io/rs-utils/"
+documentation = "https://docs.rs/qubit-utils"
+readme = "README.md"
+keywords = ["utilities", "qubit"]
+categories = ["rust-patterns"]
+include = [
+    "/Cargo.toml",
+    "/LICENSE",
+    "/README.md",
+    "/README.zh_CN.md",
+    "/src/**",
+    "/doc/**",
+    "/tests/**",
+    "/benches/**",
+]
+
+[dependencies]
+
+[[test]]
+name = "tests"
+path = "tests/mod.rs"
