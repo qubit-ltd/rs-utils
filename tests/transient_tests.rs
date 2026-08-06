@@ -7,12 +7,15 @@
 // =============================================================================
 
 use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
+use std::hash::{
+    Hash,
+    Hasher,
+};
 
 use qubit_utils::Transient;
 
 #[test]
-fn transient_ignores_inner_value_for_equality_and_hash() {
+fn test_transient_ignores_inner_value_for_equality_and_hash() {
     let first = Transient::new(1_u32);
     let second = Transient::new(2_u32);
 
@@ -26,7 +29,7 @@ fn transient_ignores_inner_value_for_equality_and_hash() {
 }
 
 #[test]
-fn transient_preserves_inner_value_through_access_and_clone() {
+fn test_transient_preserves_inner_value_through_access_and_clone() {
     let mut value = Transient::new(String::from("runtime"));
     assert_eq!(value.get(), "runtime");
     value.get_mut().push_str(" state");
@@ -37,7 +40,7 @@ fn transient_preserves_inner_value_through_access_and_clone() {
 }
 
 #[test]
-fn transient_supports_conversion_and_reference_traits() {
+fn test_transient_supports_conversion_and_reference_traits() {
     let mut from_value: Transient<String> = String::from("from").into();
     assert_eq!(from_value.as_ref(), "from");
     from_value.as_mut().push_str(" value");

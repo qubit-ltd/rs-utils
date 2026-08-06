@@ -7,7 +7,10 @@
 // =============================================================================
 //! Runtime-only values whose contents do not participate in value semantics.
 
-use std::hash::{Hash, Hasher};
+use std::hash::{
+    Hash,
+    Hasher,
+};
 
 /// Stores runtime state that is intentionally excluded from a parent value's
 /// equality and hash semantics.
@@ -23,8 +26,8 @@ use std::hash::{Hash, Hasher};
 /// - request contexts that cache computed values (`HashMap`, `Vec`, etc.),
 /// - non-semantic feature toggles (`debug`, `hot`, `trace`) affecting runtime
 ///   behavior but not identity,
-/// - ephemeral handles (`Arc`, file descriptors, counters) that should not break
-///   equality semantics.
+/// - ephemeral handles (`Arc`, file descriptors, counters) that should not
+///   break equality semantics.
 ///
 /// The container does not implement Serde's `Serialize` or `Deserialize`.
 /// A parent type using Serde derive should mark a transient field with

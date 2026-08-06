@@ -8,13 +8,17 @@
 //! Checked range arithmetic helpers for slice-like bounds validation.
 
 use std::convert::Infallible;
-use std::io::{Error, ErrorKind, Result};
+use std::io::{
+    Error,
+    ErrorKind,
+    Result,
+};
 
 /// Namespace for checked range calculations for slice-like APIs.
 ///
 /// This type groups pure helpers that compute and validate `start + count`
-/// against a buffer length. The helpers are not unsafe and have no dependency on
-/// element type.
+/// against a buffer length. The helpers are not unsafe and have no dependency
+/// on element type.
 pub struct SliceRange {
     /// Prevents construction of this namespace type.
     _private: Infallible,
@@ -33,14 +37,19 @@ impl SliceRange {
     ///
     /// `Some(end)` when `start + count` is valid and not overflowed.
     #[inline]
-    pub const fn range_end(len: usize, start: usize, count: usize) -> Option<usize> {
+    pub const fn range_end(
+        len: usize,
+        start: usize,
+        count: usize,
+    ) -> Option<usize> {
         match start.checked_add(count) {
             Some(end) if len >= end => Some(end),
             _ => None,
         }
     }
 
-    /// Returns whether a slice has at least `count` accessible items from `start`.
+    /// Returns whether a slice has at least `count` accessible items from
+    /// `start`.
     ///
     /// # Parameters
     ///
@@ -72,8 +81,8 @@ impl SliceRange {
     ///
     /// # Errors
     ///
-    /// Returns [`ErrorKind::InvalidInput`] with `message` when the range does not
-    /// fit or overflows.
+    /// Returns [`ErrorKind::InvalidInput`] with `message` when the range does
+    /// not fit or overflows.
     #[inline]
     pub fn checked_range_end(
         len: usize,
