@@ -15,11 +15,33 @@
 
 ## 安装
 
-当仓库发布可用 API 后，可在 `Cargo.toml` 的依赖中添加 `qubit-utils`。
+在 `Cargo.toml` 中添加已发布的 crate：
+
+```toml
+[dependencies]
+qubit-utils = "0.2"
+```
+
+## 快速开始
+
+在执行有意绕过边界检查的 slice 访问前，先使用带检查的范围计算：
+
+```rust
+use qubit_utils::{nonzero, SliceRange, UncheckedSlice};
+
+let required = nonzero(2);
+let input = [0x10_u8, 0x20, 0x30];
+let end = SliceRange::checked_range_end(input.len(), 1, required.get(), "range exceeds input")
+    .expect("validated range should fit");
+
+// SAFETY: `end` 证明请求的范围位于 `input` 内。
+let value = unsafe { UncheckedSlice::read(&input, end - 1) };
+assert_eq!(value, 0x20);
+```
 
 ## 当前状态
 
-当前版本已提供可直接使用的通用 API：
+0.2.0 版本已提供多个可复用的通用 API：
 
 - 可恢复分配接口：`create_vec`、`try_reserve_vec`、`try_reserve_string`、
   `allocation_error`，以及 `coverage` 特性下的测试辅助接口；
@@ -62,7 +84,7 @@ Copyright (c) 2025 - 2026. Haixing Hu. All rights reserved.
 ## 贡献
 
 欢迎贡献。请遵循 Rust API 指南，及时更新公共 API 文档与测试，并在提交
-Pull Request 前运行 `./align-ci.sh`格式化代码，运行`./ci-check.sh`对齐CI要求。
+Pull Request 前运行 `./align-ci.sh` 格式化代码，运行 `./ci-check.sh` 对齐 CI 要求。
 
 ## 作者
 

@@ -17,12 +17,33 @@ projects.
 
 ## Installation
 
-Add `qubit-utils` to the dependencies in your `Cargo.toml` when a published API
-is available.
+Add the published crate to your `Cargo.toml`:
+
+```toml
+[dependencies]
+qubit-utils = "0.2"
+```
+
+## Quick Start
+
+Use checked range arithmetic before an intentionally unchecked slice access:
+
+```rust
+use qubit_utils::{nonzero, SliceRange, UncheckedSlice};
+
+let required = nonzero(2);
+let input = [0x10_u8, 0x20, 0x30];
+let end = SliceRange::checked_range_end(input.len(), 1, required.get(), "range exceeds input")
+    .expect("validated range should fit");
+
+// SAFETY: `end` proves that the requested range is inside `input`.
+let value = unsafe { UncheckedSlice::read(&input, end - 1) };
+assert_eq!(value, 0x20);
+```
 
 ## Current Status
 
-The crate is in early release with several stable utility APIs available for reuse:
+The 0.2.0 crate provides several reusable utility APIs:
 
 - fallible allocation helpers (`create_vec`, `try_reserve_vec`, `try_reserve_string`,
   `allocation_error`, plus coverage-testing helpers under `coverage` cfg),
