@@ -85,6 +85,7 @@ use std::hash::{
 /// }
 /// ```
 #[repr(transparent)]
+#[must_use]
 #[derive(Clone, Copy, Debug)]
 pub struct Transient<T> {
     value: T,
@@ -92,24 +93,48 @@ pub struct Transient<T> {
 
 impl<T> Transient<T> {
     /// Wraps `value` as runtime-only state.
+    ///
+    /// # Type Parameters
+    ///
+    /// - `T`: Runtime-only value type.
+    ///
+    /// # Parameters
+    ///
+    /// - `value`: Value to store outside the parent value's semantics.
+    ///
+    /// # Returns
+    ///
+    /// A transient wrapper containing `value`.
     #[inline]
     pub const fn new(value: T) -> Self {
         Self { value }
     }
 
     /// Returns a shared reference to the runtime-only value.
+    ///
+    /// # Returns
+    ///
+    /// A shared reference to the wrapped value.
     #[inline]
     pub const fn get(&self) -> &T {
         &self.value
     }
 
     /// Returns a mutable reference to the runtime-only value.
+    ///
+    /// # Returns
+    ///
+    /// A mutable reference to the wrapped value.
     #[inline]
     pub fn get_mut(&mut self) -> &mut T {
         &mut self.value
     }
 
     /// Unwraps the runtime-only value.
+    ///
+    /// # Returns
+    ///
+    /// The wrapped value.
     #[inline]
     pub fn into_inner(self) -> T {
         self.value

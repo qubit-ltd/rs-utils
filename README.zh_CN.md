@@ -44,7 +44,7 @@ assert_eq!(value, 0x20);
 0.2.0 版本已提供多个可复用的通用 API：
 
 - 可恢复分配接口：`create_vec`、`try_reserve_vec`、`try_reserve_string`、
-  `allocation_error`，以及 `coverage` 特性下的测试辅助接口；
+  `allocation_error`，以及 `cfg(coverage)` 配置下的测试辅助接口；
 - `nonzero`：用于构造 `NonZeroUsize` 的公开函数；
 - `Transient<T>`：用于表示“运行时临时状态”的包装类型（不参与 `Eq`/`Hash`）；
 - `UncheckedSlice` 与 `SliceRange`：低层 slice 范围与无边界检查操作工具。
@@ -84,7 +84,7 @@ Copyright (c) 2025 - 2026. Haixing Hu. All rights reserved.
 ## 贡献
 
 欢迎贡献。请遵循 Rust API 指南，及时更新公共 API 文档与测试，并在提交
-Pull Request 前运行 `./align-ci.sh` 格式化代码，运行 `./ci-check.sh` 对齐 CI 要求。
+Pull Request 前运行 `./align-ci.sh`格式化代码，运行`./ci-check.sh`对齐CI要求。
 
 ## 作者
 
