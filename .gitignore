@@ -68,6 +68,7 @@ external/
 .cursor/
 fuzz/corpus/
 fuzz/artifacts/
+fuzz/target/
 
 # Temporary files
 *.tmp
