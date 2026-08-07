@@ -63,6 +63,41 @@ fn test_ne_unaligned_unchecked_reads_and_writes() {
 }
 
 #[test]
+fn test_ne_unaligned_unchecked_supports_integer_and_float_scalars() {
+    let mut output = [0_u8; 32];
+    let signed = -123_456_i32;
+    let unsigned = usize::MAX - 7;
+    let float = f32::from_bits(0x7fc0_1234);
+    let double = f64::from_bits(0x7ff8_0000_0000_1234);
+
+    // SAFETY: Every write and read range is fully contained in `output`, and
+    // all values implement `AnyBitPattern`.
+    unsafe {
+        UncheckedSlice::write_ne_unaligned(&mut output, 0, signed);
+        UncheckedSlice::write_ne_unaligned(&mut output, 8, unsigned);
+        UncheckedSlice::write_ne_unaligned(&mut output, 16, float);
+        UncheckedSlice::write_ne_unaligned(&mut output, 24, double);
+
+        assert_eq!(
+            UncheckedSlice::read_ne_unaligned::<i32>(&output, 0),
+            signed,
+        );
+        assert_eq!(
+            UncheckedSlice::read_ne_unaligned::<usize>(&output, 8),
+            unsigned,
+        );
+        assert_eq!(
+            UncheckedSlice::read_ne_unaligned::<f32>(&output, 16).to_bits(),
+            float.to_bits(),
+        );
+        assert_eq!(
+            UncheckedSlice::read_ne_unaligned::<f64>(&output, 24).to_bits(),
+            double.to_bits(),
+        );
+    }
+}
+
+#[test]
 fn test_subslice_returns_range() {
     let input = [1_u8, 2, 3, 4, 5];
     let slice = unsafe { UncheckedSlice::subslice(&input, 1, 3) };

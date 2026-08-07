@@ -10,7 +10,10 @@
 //! These helpers avoid bound checks and are intended for call sites that
 //! already validate bounds in their own protocol.
 
-use crate::SliceRange;
+use crate::{
+    AnyBitPattern,
+    SliceRange,
+};
 use core::mem;
 use std::convert::Infallible;
 
@@ -313,7 +316,7 @@ impl UncheckedSlice {
     ///
     /// # Type Parameters
     ///
-    /// - `T`: Copyable value type represented by the source bytes.
+    /// - `T`: Supported scalar type implementing [`AnyBitPattern`].
     ///
     /// # Parameters
     ///
@@ -333,18 +336,34 @@ impl UncheckedSlice {
     ///
     /// The caller must guarantee that `index..index + size_of::<T>()` is a
     /// valid readable range inside `input` and that the addition does not
-    /// overflow. Every byte in that range must be initialized and together
-    /// form a valid value of `T`, including all bit-validity and pointer
-    /// provenance requirements imposed by `T`.
+    /// overflow. Every byte in that range must be initialized. The
+    /// [`AnyBitPattern`] bound guarantees that the bytes form a valid value of
+    /// `T` without uninitialized padding.
     ///
-    /// `T: Copy` does not guarantee that an arbitrary byte sequence is a valid
-    /// `T`. Primitive integer and floating-point types satisfy this
-    /// representation requirement; types with restricted bit patterns,
-    /// references, or pointers require additional justification from the
-    /// caller.
+    /// The public API intentionally rejects types whose every bit pattern is
+    /// not a valid value:
+    ///
+    /// ```compile_fail
+    /// use qubit_utils::UncheckedSlice;
+    /// use std::num::NonZeroUsize;
+    ///
+    /// let bytes = [0_u8; 4];
+    /// let _ = unsafe {
+    ///     UncheckedSlice::read_ne_unaligned::<bool>(&bytes, 0)
+    /// };
+    /// let _ = unsafe {
+    ///     UncheckedSlice::read_ne_unaligned::<char>(&bytes, 0)
+    /// };
+    /// let _ = unsafe {
+    ///     UncheckedSlice::read_ne_unaligned::<NonZeroUsize>(&bytes, 0)
+    /// };
+    /// ```
     #[must_use]
     #[inline(always)]
-    pub unsafe fn read_ne_unaligned<T: Copy>(input: &[u8], index: usize) -> T {
+    pub unsafe fn read_ne_unaligned<T: AnyBitPattern>(
+        input: &[u8],
+        index: usize,
+    ) -> T {
         debug_assert!(
             SliceRange::range_fits(input.len(), index, mem::size_of::<T>()),
             "unchecked input range exceeds source buffer"
@@ -361,7 +380,7 @@ impl UncheckedSlice {
     ///
     /// # Type Parameters
     ///
-    /// - `T`: Copyable value type whose object representation is written.
+    /// - `T`: Supported scalar type implementing [`AnyBitPattern`].
     ///
     /// # Parameters
     ///
@@ -386,7 +405,7 @@ impl UncheckedSlice {
     /// bytewise representation. Types containing padding, references, or
     /// pointers require additional justification from the caller.
     #[inline(always)]
-    pub unsafe fn write_ne_unaligned<T: Copy>(
+    pub unsafe fn write_ne_unaligned<T: AnyBitPattern>(
         output: &mut [u8],
         index: usize,
         value: T,

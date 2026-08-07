@@ -12,6 +12,8 @@
 // qubit-style: allow coverage-cfg
 
 mod allocation;
+mod any_bit_pattern;
+mod internal;
 mod nonzero;
 mod slice_range;
 mod transient;
@@ -32,6 +34,7 @@ pub use allocation::{
     coverage_fail_reserve_after,
     coverage_reset_reserve_hooks,
 };
+pub use any_bit_pattern::AnyBitPattern;
 pub use nonzero::nonzero;
 pub use slice_range::SliceRange;
 pub use transient::Transient;

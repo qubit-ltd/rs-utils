@@ -1,15 +1,10 @@
 // =============================================================================
-//    Copyright (c) 2026 Haixing Hu.
+//    Copyright (c) 2025 - 2026 Haixing Hu.
 //
 //    SPDX-License-Identifier: Apache-2.0
 //
 //    Licensed under the Apache License, Version 2.0.
 // =============================================================================
+//! Private implementation helpers for `qubit-utils`.
 
-mod allocation_tests;
-mod any_bit_pattern_tests;
-mod internal;
-mod nonzero_tests;
-mod slice_range_tests;
-mod transient_tests;
-mod unchecked_slice_tests;
+pub mod sealed;
