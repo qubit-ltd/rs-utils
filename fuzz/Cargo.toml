@@ -1,0 +1,20 @@
+[package]
+name = "qubit-utils-fuzz"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.94"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+qubit-utils = { path = "..", version = "0.2" }
+
+[[bin]]
+name = "unchecked_slice"
+path = "fuzz_targets/unchecked_slice.rs"
+test = false
+doc = false
+bench = false

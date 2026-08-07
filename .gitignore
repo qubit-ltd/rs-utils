@@ -66,6 +66,8 @@ external/
 .worktrees/
 .cursor
 .cursor/
+fuzz/corpus/
+fuzz/artifacts/
 
 # Temporary files
 *.tmp
