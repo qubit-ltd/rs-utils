@@ -245,6 +245,10 @@ pub fn try_reserve_string(
 ///
 /// Returns [`ErrorKind::OutOfMemory`] if the allocation request fails or the
 /// requested vector length exceeds the supported capacity.
+///
+/// # Panics
+///
+/// Panics if cloning `fill` panics while initializing the returned vector.
 #[inline]
 pub fn create_vec<T>(len: usize, fill: T) -> Result<Vec<T>>
 where
