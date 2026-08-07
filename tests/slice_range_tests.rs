@@ -34,9 +34,3 @@ fn test_checked_range_end_returns_io_error() {
 fn test_range_validation_rejects_overflow() {
     assert!(!SliceRange::range_fits(4, usize::MAX, 1));
 }
-
-#[test]
-fn test_index_saturating_add_checks_overflow() {
-    assert_eq!(10usize.saturating_add(2), 12);
-    assert_eq!(usize::MAX.saturating_add(1), usize::MAX);
-}

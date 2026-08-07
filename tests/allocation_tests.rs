@@ -34,6 +34,33 @@ fn test_try_reserve_string_preserves_try_reserve_error() {
     assert!(output.is_empty());
 }
 
+#[test]
+fn test_create_vec_initializes_requested_length() {
+    let values = qubit_utils::create_vec(3, 7_u8)
+        .expect("small vector allocation should succeed");
+
+    assert_eq!(values, vec![7, 7, 7]);
+}
+
+#[test]
+fn test_create_vec_accepts_zero_length() {
+    let values = qubit_utils::create_vec::<u8>(0, 7)
+        .expect("zero-length vector should succeed");
+
+    assert!(values.is_empty());
+}
+
+#[test]
+fn test_allocation_error_maps_try_reserve_failure() {
+    let mut output = Vec::<u8>::new();
+    let error = qubit_utils::try_reserve_vec(&mut output, usize::MAX)
+        .expect_err("capacity overflow should fail");
+    let io_error = qubit_utils::allocation_error(error);
+
+    assert_eq!(io_error.kind(), std::io::ErrorKind::OutOfMemory);
+    assert!(io_error.get_ref().is_some());
+}
+
 #[cfg(coverage)]
 mod coverage_tests {
     use std::io::ErrorKind;
