@@ -7,10 +7,8 @@
 // =============================================================================
 //! Runtime-only values whose contents do not participate in value semantics.
 
-use std::hash::{
-    Hash,
-    Hasher,
-};
+use std::hash::Hash;
+use std::hash::Hasher;
 
 /// Stores runtime state that is intentionally excluded from a parent value's
 /// equality and hash semantics.

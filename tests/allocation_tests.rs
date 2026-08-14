@@ -7,10 +7,10 @@
 // =============================================================================
 use std::collections::TryReserveError;
 
-use qubit_utils::{
-    try_reserve_string,
-    try_reserve_vec,
-};
+use qubit_utils::allocation_error;
+use qubit_utils::create_vec;
+use qubit_utils::try_reserve_string;
+use qubit_utils::try_reserve_vec;
 
 #[test]
 fn test_try_reserve_vec_preserves_try_reserve_error() {
@@ -36,16 +36,16 @@ fn test_try_reserve_string_preserves_try_reserve_error() {
 
 #[test]
 fn test_create_vec_initializes_requested_length() {
-    let values = qubit_utils::create_vec(3, 7_u8)
-        .expect("small vector allocation should succeed");
+    let values =
+        create_vec(3, 7_u8).expect("small vector allocation should succeed");
 
     assert_eq!(values, vec![7, 7, 7]);
 }
 
 #[test]
 fn test_create_vec_accepts_zero_length() {
-    let values = qubit_utils::create_vec::<u8>(0, 7)
-        .expect("zero-length vector should succeed");
+    let values =
+        create_vec::<u8>(0, 7).expect("zero-length vector should succeed");
 
     assert!(values.is_empty());
 }
@@ -53,9 +53,9 @@ fn test_create_vec_accepts_zero_length() {
 #[test]
 fn test_allocation_error_maps_try_reserve_failure() {
     let mut output = Vec::<u8>::new();
-    let error = qubit_utils::try_reserve_vec(&mut output, usize::MAX)
+    let error = try_reserve_vec(&mut output, usize::MAX)
         .expect_err("capacity overflow should fail");
-    let io_error = qubit_utils::allocation_error(error);
+    let io_error = allocation_error(error);
 
     assert_eq!(io_error.kind(), std::io::ErrorKind::OutOfMemory);
     assert!(io_error.get_ref().is_some());
@@ -65,17 +65,15 @@ fn test_allocation_error_maps_try_reserve_failure() {
 mod coverage_tests {
     use std::io::ErrorKind;
 
-    use qubit_utils::{
-        allocation_error,
-        coverage_fail_next_reserve,
-        coverage_fail_next_string_reserve,
-        coverage_fail_reserve_above,
-        coverage_fail_reserve_after,
-        coverage_reset_reserve_hooks,
-        create_vec,
-        try_reserve_string,
-        try_reserve_vec,
-    };
+    use qubit_utils::allocation_error;
+    use qubit_utils::coverage_fail_next_reserve;
+    use qubit_utils::coverage_fail_next_string_reserve;
+    use qubit_utils::coverage_fail_reserve_above;
+    use qubit_utils::coverage_fail_reserve_after;
+    use qubit_utils::coverage_reset_reserve_hooks;
+    use qubit_utils::create_vec;
+    use qubit_utils::try_reserve_string;
+    use qubit_utils::try_reserve_vec;
 
     fn reset_hooks() {
         coverage_reset_reserve_hooks();

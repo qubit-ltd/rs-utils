@@ -7,10 +7,8 @@
 // =============================================================================
 
 use std::collections::hash_map::DefaultHasher;
-use std::hash::{
-    Hash,
-    Hasher,
-};
+use std::hash::Hash;
+use std::hash::Hasher;
 
 use qubit_utils::Transient;
 

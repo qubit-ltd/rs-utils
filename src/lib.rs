@@ -19,21 +19,25 @@ mod slice_range;
 mod transient;
 mod unchecked_slice;
 
-pub use allocation::{
-    allocation_error,
-    create_vec,
-    try_reserve_string,
-    try_reserve_vec,
-};
+pub use allocation::allocation_error;
 #[cfg(coverage)]
 #[doc(hidden)]
-pub use allocation::{
-    coverage_fail_next_reserve,
-    coverage_fail_next_string_reserve,
-    coverage_fail_reserve_above,
-    coverage_fail_reserve_after,
-    coverage_reset_reserve_hooks,
-};
+pub use allocation::coverage_fail_next_reserve;
+#[cfg(coverage)]
+#[doc(hidden)]
+pub use allocation::coverage_fail_next_string_reserve;
+#[cfg(coverage)]
+#[doc(hidden)]
+pub use allocation::coverage_fail_reserve_above;
+#[cfg(coverage)]
+#[doc(hidden)]
+pub use allocation::coverage_fail_reserve_after;
+#[cfg(coverage)]
+#[doc(hidden)]
+pub use allocation::coverage_reset_reserve_hooks;
+pub use allocation::create_vec;
+pub use allocation::try_reserve_string;
+pub use allocation::try_reserve_vec;
 pub use any_bit_pattern::AnyBitPattern;
 pub use nonzero::nonzero;
 pub use slice_range::SliceRange;

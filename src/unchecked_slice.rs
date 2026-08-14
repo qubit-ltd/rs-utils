@@ -10,12 +10,11 @@
 //! These helpers avoid bound checks and are intended for call sites that
 //! already validate bounds in their own protocol.
 
-use crate::{
-    AnyBitPattern,
-    SliceRange,
-};
 use core::mem;
 use std::convert::Infallible;
+
+use crate::AnyBitPattern;
+use crate::SliceRange;
 
 /// Namespace for low-level slice operations without bound checks.
 ///

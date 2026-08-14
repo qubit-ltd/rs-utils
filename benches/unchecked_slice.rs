@@ -9,12 +9,10 @@
 
 use std::hint::black_box;
 
-use criterion::{
-    Criterion,
-    Throughput,
-    criterion_group,
-    criterion_main,
-};
+use criterion::Criterion;
+use criterion::Throughput;
+use criterion::criterion_group;
+use criterion::criterion_main;
 use qubit_utils::UncheckedSlice;
 
 const BUFFER_COUNT: usize = 256;

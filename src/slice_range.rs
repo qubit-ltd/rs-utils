@@ -8,11 +8,9 @@
 //! Checked range arithmetic helpers for slice-like bounds validation.
 
 use std::convert::Infallible;
-use std::io::{
-    Error,
-    ErrorKind,
-    Result,
-};
+use std::io::Error;
+use std::io::ErrorKind;
+use std::io::Result;
 
 /// Namespace for checked range calculations for slice-like APIs.
 ///
