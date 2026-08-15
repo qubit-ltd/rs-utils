@@ -1,6 +1,6 @@
 [package]
 name = "qubit-utils"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 rust-version = "1.94"
 autotests = false
@@ -19,7 +19,6 @@ include = [
     "/README.md",
     "/README.zh_CN.md",
     "/src/**",
-    "/doc/**",
     "/tests/**",
     "/benches/**",
 ]
@@ -31,8 +30,8 @@ miri = true
 
 [dev-dependencies]
 criterion = { version = "0.8", default-features = false }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(coverage)'] }
