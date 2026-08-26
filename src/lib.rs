@@ -11,35 +11,32 @@
 //! allocation, range validation, and unchecked-slice utilities.
 // qubit-style: allow coverage-cfg
 
-mod allocation;
-mod any_bit_pattern;
 mod internal;
-mod nonzero;
-mod slice_range;
-mod transient;
-mod unchecked_slice;
+pub mod math;
+pub mod memory;
+pub mod util;
 
-pub use allocation::allocation_error;
+pub use math::nonzero;
+pub use memory::AnyBitPattern;
+pub use memory::SliceRange;
+pub use memory::UncheckedSlice;
+pub use memory::allocation_error;
 #[cfg(coverage)]
 #[doc(hidden)]
-pub use allocation::coverage_fail_next_reserve;
+pub use memory::coverage_fail_next_reserve;
 #[cfg(coverage)]
 #[doc(hidden)]
-pub use allocation::coverage_fail_next_string_reserve;
+pub use memory::coverage_fail_next_string_reserve;
 #[cfg(coverage)]
 #[doc(hidden)]
-pub use allocation::coverage_fail_reserve_above;
+pub use memory::coverage_fail_reserve_above;
 #[cfg(coverage)]
 #[doc(hidden)]
-pub use allocation::coverage_fail_reserve_after;
+pub use memory::coverage_fail_reserve_after;
 #[cfg(coverage)]
 #[doc(hidden)]
-pub use allocation::coverage_reset_reserve_hooks;
-pub use allocation::create_vec;
-pub use allocation::try_reserve_string;
-pub use allocation::try_reserve_vec;
-pub use any_bit_pattern::AnyBitPattern;
-pub use nonzero::nonzero;
-pub use slice_range::SliceRange;
-pub use transient::Transient;
-pub use unchecked_slice::UncheckedSlice;
+pub use memory::coverage_reset_reserve_hooks;
+pub use memory::create_vec;
+pub use memory::try_reserve_string;
+pub use memory::try_reserve_vec;
+pub use util::Transient;

@@ -113,7 +113,8 @@ impl<T> Transient<T> {
     /// # Returns
     ///
     /// A shared reference to the wrapped value.
-    #[inline]
+    #[must_use]
+    #[inline(always)]
     pub const fn get(&self) -> &T {
         &self.value
     }
@@ -123,7 +124,8 @@ impl<T> Transient<T> {
     /// # Returns
     ///
     /// A mutable reference to the wrapped value.
-    #[inline]
+    #[must_use]
+    #[inline(always)]
     pub fn get_mut(&mut self) -> &mut T {
         &mut self.value
     }

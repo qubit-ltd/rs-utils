@@ -5,9 +5,8 @@
 //
 //    Licensed under the Apache License, Version 2.0.
 // =============================================================================
-//! Defines the private sealing marker for audited public traits.
 
-/// Prevents external implementations of public marker traits.
-pub trait Sealed {
-    // empty
-}
+mod allocation_tests;
+mod any_bit_pattern_tests;
+mod slice_range_tests;
+mod unchecked_slice_tests;

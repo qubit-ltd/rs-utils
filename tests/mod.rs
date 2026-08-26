@@ -6,10 +6,7 @@
 //    Licensed under the Apache License, Version 2.0.
 // =============================================================================
 
-mod allocation_tests;
-mod any_bit_pattern_tests;
 mod internal;
-mod nonzero_tests;
-mod slice_range_tests;
-mod transient_tests;
-mod unchecked_slice_tests;
+mod math;
+mod memory;
+mod util;

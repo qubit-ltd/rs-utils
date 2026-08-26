@@ -13,13 +13,24 @@
 use core::mem;
 use std::convert::Infallible;
 
-use crate::AnyBitPattern;
-use crate::SliceRange;
+use super::AnyBitPattern;
+use super::SliceRange;
 
 /// Namespace for low-level slice operations without bound checks.
 ///
 /// All functions are unsafe and assume the caller has already validated their
 /// preconditions. Safety requirements in each method are explicit.
+///
+/// # Examples
+///
+/// ```
+/// use qubit_utils::UncheckedSlice;
+///
+/// let values = [10_u8, 20, 30];
+/// // SAFETY: Index 1 is within `values`.
+/// let value = unsafe { UncheckedSlice::read(&values, 1) };
+/// assert_eq!(value, 20);
+/// ```
 pub struct UncheckedSlice {
     /// Prevents construction of this namespace type.
     _private: Infallible,

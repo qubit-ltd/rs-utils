@@ -42,7 +42,9 @@ use crate::internal::sealed::Sealed;
 /// representation contains no uninitialized padding. The trait is sealed so
 /// that this invariant can only be established for the audited primitive types
 /// below.
-pub unsafe trait AnyBitPattern: Copy + Sealed {}
+pub unsafe trait AnyBitPattern: Copy + Sealed {
+    // empty
+}
 
 macro_rules! impl_any_bit_pattern {
     ($($type:ty),+ $(,)?) => {

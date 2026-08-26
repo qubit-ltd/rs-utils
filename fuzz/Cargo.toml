@@ -10,7 +10,7 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-qubit-utils = { path = "..", version = "0.2" }
+qubit-utils = { path = "..", version = "0.3" }
 
 [[bin]]
 name = "unchecked_slice"

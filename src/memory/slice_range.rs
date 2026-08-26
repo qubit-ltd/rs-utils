@@ -17,6 +17,15 @@ use std::io::Result;
 /// This type groups pure helpers that compute and validate `start + count`
 /// against a buffer length. The helpers are not unsafe and have no dependency
 /// on element type.
+///
+/// # Examples
+///
+/// ```
+/// use qubit_utils::SliceRange;
+///
+/// assert_eq!(SliceRange::range_end(8, 2, 4), Some(6));
+/// assert!(!SliceRange::range_fits(8, 6, 4));
+/// ```
 pub struct SliceRange {
     /// Prevents construction of this namespace type.
     _private: Infallible,
@@ -34,6 +43,7 @@ impl SliceRange {
     /// # Returns
     ///
     /// `Some(end)` when `start + count` is valid and not overflowed.
+    #[must_use]
     #[inline]
     pub const fn range_end(
         len: usize,
