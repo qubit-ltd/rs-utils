@@ -7,13 +7,14 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![中文文档](https://img.shields.io/badge/文档-中文版-blue.svg)](README.zh_CN.md)
 
-General-purpose utilities for Rust projects. This repository is the foundation for
-small, reusable helpers shared across Qubit software.
+General-purpose, dependency-light utilities for Rust projects. This crate gives
+Qubit applications one shared implementation for standard-range algebra,
+fallible allocation, runtime-only values, and audited low-level slice access.
 
 ## Intended Users
 
-Rust developers who need to share broadly applicable utilities across Qubit
-projects.
+Rust developers who need small, reusable building blocks across Qubit projects
+without adopting a broad framework or duplicating boundary-sensitive code.
 
 ## Installation
 
@@ -21,30 +22,46 @@ Add the published crate to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-qubit-utils = "0.2"
+qubit-utils = "0.3"
 ```
 
 ## Quick Start
 
-Use checked range arithmetic before an intentionally unchecked slice access:
+Suppose a service accepts a requested numeric window but may process only values
+inside a configured policy window. The range helpers accept standard Rust range
+syntax and return owned standard-library bounds:
 
 ```rust
-use qubit_utils::{nonzero, SliceRange, UncheckedSlice};
+use std::ops::Bound::Excluded;
+use std::ops::Bound::Included;
 
-let required = nonzero(2);
-let input = [0x10_u8, 0x20, 0x30];
-let end = SliceRange::checked_range_end(input.len(), 1, required.get(), "range exceeds input")
-    .expect("validated range should fit");
+use qubit_utils::range::encloses;
+use qubit_utils::range::intersection;
 
-// SAFETY: `end` proves that the requested range is inside `input`.
-let value = unsafe { UncheckedSlice::read(&input, end - 1) };
-assert_eq!(value, 0x20);
+let policy = 1..10;
+let requested = 5..=20;
+let accepted = intersection(&policy, &requested);
+
+assert_eq!(accepted, Some((Included(5), Excluded(10))));
+assert!(encloses(&policy, &accepted.expect("the windows overlap")));
 ```
+
+The result is a `(Bound<T>, Bound<T>)`, which already implements
+`RangeBounds<T>` and can be passed to ordered standard-library collection APIs.
+
+## Why This Project Exists
+
+Boundary-heavy helpers are easy to get almost right and costly to maintain in
+multiple crates. `qubit-utils` centralizes the small contracts that recur across
+Qubit software while preserving standard Rust representations and keeping the
+default dependency surface small.
 
 ## Current Status
 
-The 0.2.0 crate provides several reusable utility APIs:
+The 0.3.0 crate provides several reusable utility APIs:
 
+- standard-range relationships and algebra (`is_empty`, `encloses`, `overlaps`,
+  `is_connected`, `intersection`, `span`, `gap`, and `compare`),
 - fallible allocation helpers (`create_vec`, `try_reserve_vec`, `try_reserve_string`,
   `allocation_error`, plus coverage-testing helpers under `coverage` cfg),
 - `nonzero` helper for `NonZeroUsize`,
@@ -53,12 +70,27 @@ The 0.2.0 crate provides several reusable utility APIs:
 
 ## Capabilities
 
-Provides reusable, dependency-light helpers used by adjacent Qubit Rust crates.
+The range module works with `std::ops::RangeBounds`, including normal Rust range
+syntax and arbitrary `(Bound<T>, Bound<T>)` pairs. It adds stable free functions
+for the range relationships and operations that are not yet available as a
+complete stable standard-library API.
+
+The remaining modules provide reusable memory, numeric, slice, and runtime-state
+helpers used by adjacent Qubit Rust crates. Existing crate-root re-exports remain
+available for their commonly used types and functions.
 
 ## Limitations
 
-The API set is focused and intentionally small; additional domain-specific
-helpers are expected to evolve from real usage requirements.
+Range algebra other than `is_empty` requires a total order (`Ord`). Use an
+explicit ordered wrapper when working with floating-point values whose NaN
+semantics need a policy. Range emptiness follows endpoint-order semantics and
+does not canonicalize a discrete domain, so an open integer range such as
+`(1, 2)` is not treated as empty merely because no integer lies between its
+endpoints.
+
+The crate intentionally does not define a custom interval type, dynamic
+comparators, discrete-domain stepping, or domain-specific date and money range
+types. Additional helpers are added only when they are broadly reusable.
 
 ## Testing
 

@@ -7,13 +7,15 @@
 // =============================================================================
 //! General-purpose utilities for Rust projects.
 //!
-//! The crate provides reusable runtime-state, non-zero construction, fallible
-//! allocation, range validation, and unchecked-slice utilities.
+//! The crate provides reusable standard-range algebra, runtime-state, non-zero
+//! construction, fallible allocation, range validation, and unchecked-slice
+//! utilities.
 // qubit-style: allow coverage-cfg
 
 mod internal;
 pub mod math;
 pub mod memory;
+pub mod range;
 pub mod util;
 
 pub use math::nonzero;

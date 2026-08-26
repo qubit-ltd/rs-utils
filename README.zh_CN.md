@@ -7,11 +7,13 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![English Document](https://img.shields.io/badge/Document-English-blue.svg)](README.md)
 
-为 Rust 项目提供通用工具。本仓库用于沉淀 Qubit 软件中可复用的小型辅助能力。
+为 Rust 项目提供通用、轻依赖的基础工具。该 crate 统一承载 Qubit 项目反复需要的
+标准区间运算、可恢复内存分配、运行时临时值和经过审查的底层 slice 访问能力。
 
 ## 目标用户
 
-需要在多个 Qubit 项目之间共享通用工具的 Rust 开发者。
+适合需要在多个 Qubit 项目中复用小型基础能力，同时不希望引入大型框架或重复实现
+边界敏感逻辑的 Rust 开发者。
 
 ## 安装
 
@@ -19,30 +21,44 @@
 
 ```toml
 [dependencies]
-qubit-utils = "0.2"
+qubit-utils = "0.3"
 ```
 
 ## 快速开始
 
-在执行有意绕过边界检查的 slice 访问前，先使用带检查的范围计算：
+假设某服务收到一个数值区间请求，但实际处理范围不能越过策略允许的窗口。
+区间工具可以直接接收 Rust 标准区间，并返回持有所有权的标准库边界：
 
 ```rust
-use qubit_utils::{nonzero, SliceRange, UncheckedSlice};
+use std::ops::Bound::Excluded;
+use std::ops::Bound::Included;
 
-let required = nonzero(2);
-let input = [0x10_u8, 0x20, 0x30];
-let end = SliceRange::checked_range_end(input.len(), 1, required.get(), "range exceeds input")
-    .expect("validated range should fit");
+use qubit_utils::range::encloses;
+use qubit_utils::range::intersection;
 
-// SAFETY: `end` 证明请求的范围位于 `input` 内。
-let value = unsafe { UncheckedSlice::read(&input, end - 1) };
-assert_eq!(value, 0x20);
+let policy = 1..10;
+let requested = 5..=20;
+let accepted = intersection(&policy, &requested);
+
+assert_eq!(accepted, Some((Included(5), Excluded(10))));
+assert!(encloses(&policy, &accepted.expect("the windows overlap")));
 ```
+
+返回值是 `(Bound<T>, Bound<T>)`，它已经实现 `RangeBounds<T>`，可以直接用于
+标准库有序集合的范围查询。
+
+## 为什么需要这个项目
+
+边界相关代码很容易出现“多数场景正确、极端情况错误”的实现，而且分散在多个
+crate 后维护成本会持续上升。`qubit-utils` 集中维护 Qubit 项目反复使用的小型契约，
+同时优先保留 Rust 标准表示，并控制默认依赖规模。
 
 ## 当前状态
 
-0.2.0 版本已提供多个可复用的通用 API：
+0.3.0 版本提供以下可复用 API：
 
+- 标准区间的关系判断与代数运算：`is_empty`、`encloses`、`overlaps`、
+  `is_connected`、`intersection`、`span`、`gap` 和 `compare`；
 - 可恢复分配接口：`create_vec`、`try_reserve_vec`、`try_reserve_string`、
   `allocation_error`，以及 `cfg(coverage)` 配置下的测试辅助接口；
 - `nonzero`：用于构造 `NonZeroUsize` 的公开函数；
@@ -51,12 +67,21 @@ assert_eq!(value, 0x20);
 
 ## 能力
 
-提供依赖非常轻量、可直接复用的通用基础能力，持续服务于 Qubit 的 Rust
-生态项目。
+`range` 模块直接使用 `std::ops::RangeBounds`，既接受普通 Rust 区间语法，也接受
+任意 `(Bound<T>, Bound<T>)` 边界组合。它以稳定的 free function 补充当前稳定版
+标准库尚未完整提供的区间关系和运算。
+
+其余模块提供内存、数值、slice 和运行时状态工具。常用类型与函数仍保留原有的
+crate 根重导出路径。
 
 ## 限制
 
-当前公开 API 刻意保持精简，侧重底层公共能力，后续功能会按使用场景逐步补充。
+除 `is_empty` 外，区间代数要求端点实现全序 `Ord`。浮点数包含 NaN，需要先通过
+明确排序策略的包装类型使用。空区间判断采用端点顺序语义，不会针对离散域做规范化；
+因此整数开区间 `(1, 2)` 不会仅因为 1 和 2 之间没有整数而被判为空。
+
+本 crate 不定义自有区间类型、动态比较器、离散域步进，也不内置日期或金额等业务
+区间。后续能力只在具备跨项目复用价值时增加。
 
 ## 测试
 
