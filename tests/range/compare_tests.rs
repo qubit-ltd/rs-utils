@@ -66,9 +66,7 @@ fn test_compare_is_antisymmetric_and_transitive_over_small_boundary_domain() {
         for right in &ranges {
             assert_eq!(compare(left, right), compare(right, left).reverse());
             for last in &ranges {
-                if compare(left, right) != Ordering::Greater
-                    && compare(right, last) != Ordering::Greater
-                {
+                if compare(left, right) != Ordering::Greater && compare(right, last) != Ordering::Greater {
                     assert_ne!(compare(left, last), Ordering::Greater);
                 }
             }

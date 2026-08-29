@@ -23,11 +23,7 @@ fn test_write_unchecked_writes_value() {
 
 #[test]
 fn test_write_unchecked_moves_non_copy_value() {
-    let mut output = [
-        String::from("left"),
-        String::from("middle"),
-        String::from("right"),
-    ];
+    let mut output = [String::from("left"), String::from("middle"), String::from("right")];
     unsafe {
         UncheckedSlice::write(&mut output, 1, String::from("updated"));
     }
@@ -78,14 +74,8 @@ fn test_ne_unaligned_unchecked_supports_integer_and_float_scalars() {
         UncheckedSlice::write_ne_unaligned(&mut output, 16, float);
         UncheckedSlice::write_ne_unaligned(&mut output, 24, double);
 
-        assert_eq!(
-            UncheckedSlice::read_ne_unaligned::<i32>(&output, 0),
-            signed,
-        );
-        assert_eq!(
-            UncheckedSlice::read_ne_unaligned::<usize>(&output, 8),
-            unsigned,
-        );
+        assert_eq!(UncheckedSlice::read_ne_unaligned::<i32>(&output, 0), signed,);
+        assert_eq!(UncheckedSlice::read_ne_unaligned::<usize>(&output, 8), unsigned,);
         assert_eq!(
             UncheckedSlice::read_ne_unaligned::<f32>(&output, 16).to_bits(),
             float.to_bits(),

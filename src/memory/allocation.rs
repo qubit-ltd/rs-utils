@@ -136,9 +136,7 @@ fn coverage_reserve_error() -> TryReserveError {
 /// `Some(Err(_))` when a hook injects a failure, or `None` when the real
 /// reserve operation should proceed.
 #[cfg(coverage)]
-fn coverage_maybe_fail_reserve<T>(
-    additional: usize,
-) -> Option<std::result::Result<T, TryReserveError>> {
+fn coverage_maybe_fail_reserve<T>(additional: usize) -> Option<std::result::Result<T, TryReserveError>> {
     if COVERAGE_RESERVE_MAX_ADDITIONAL.with(|state| additional > state.get()) {
         return Some(Err(coverage_reserve_error()));
     }
@@ -176,10 +174,7 @@ fn coverage_maybe_fail_reserve<T>(
 /// Returns the [`TryReserveError`] reported by [`Vec::try_reserve`] if the
 /// allocation request fails or the resulting capacity would overflow.
 #[inline]
-pub fn try_reserve_vec<T>(
-    output: &mut Vec<T>,
-    additional: usize,
-) -> std::result::Result<(), TryReserveError> {
+pub fn try_reserve_vec<T>(output: &mut Vec<T>, additional: usize) -> std::result::Result<(), TryReserveError> {
     #[cfg(coverage)]
     if let Some(result) = coverage_maybe_fail_reserve::<()>(additional) {
         return result;
@@ -203,10 +198,7 @@ pub fn try_reserve_vec<T>(
 /// Returns the [`TryReserveError`] reported by [`String::try_reserve`] if the
 /// allocation request fails or the resulting capacity would overflow.
 #[inline]
-pub fn try_reserve_string(
-    output: &mut String,
-    additional: usize,
-) -> std::result::Result<(), TryReserveError> {
+pub fn try_reserve_string(output: &mut String, additional: usize) -> std::result::Result<(), TryReserveError> {
     #[cfg(coverage)]
     if COVERAGE_FAIL_NEXT_STRING_RESERVE.with(|state| {
         let fail = state.get();

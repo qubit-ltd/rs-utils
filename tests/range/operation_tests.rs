@@ -19,10 +19,7 @@ use qubit_utils::range::span;
 
 #[test]
 fn test_intersection_returns_owned_nonempty_bounds() {
-    assert_eq!(
-        intersection(&(1..10), &(5..=20)),
-        Some((Included(5), Excluded(10))),
-    );
+    assert_eq!(intersection(&(1..10), &(5..=20)), Some((Included(5), Excluded(10))),);
     assert_eq!(intersection(&(1..5), &(5..10)), None);
 }
 
@@ -30,20 +27,15 @@ fn test_intersection_returns_owned_nonempty_bounds() {
 fn test_intersection_supports_unbounded_and_arbitrary_bounds() {
     let left: Bounds<i32> = (Unbounded, Included(10));
     let right: Bounds<i32> = (Excluded(5), Unbounded);
-    assert_eq!(
-        intersection(&left, &right),
-        Some((Excluded(5), Included(10))),
-    );
+    assert_eq!(intersection(&left, &right), Some((Excluded(5), Included(10))),);
 }
 
 #[test]
 fn test_intersection_is_symmetric_and_enclosed_by_both_inputs() {
     let left = 1..=10;
     let right = 5..20;
-    let forward = intersection(&left, &right)
-        .expect("the selected ranges should have a nonempty intersection");
-    let reverse = intersection(&right, &left)
-        .expect("intersection should be symmetric for the same ranges");
+    let forward = intersection(&left, &right).expect("the selected ranges should have a nonempty intersection");
+    let reverse = intersection(&right, &left).expect("intersection should be symmetric for the same ranges");
     assert_eq!(forward, reverse);
     assert!(encloses(&left, &forward));
     assert!(encloses(&right, &forward));
@@ -62,14 +54,8 @@ fn test_span_ignores_empty_inputs_and_is_deterministic_for_two_empty_ranges() {
     let second_empty = 5..5;
     assert_eq!(span(&first_empty, &(10..20)), (Included(10), Excluded(20)));
     assert_eq!(span(&(10..20), &first_empty), (Included(10), Excluded(20)));
-    assert_eq!(
-        span(&first_empty, &second_empty),
-        (Included(5), Excluded(5)),
-    );
-    assert_eq!(
-        span(&second_empty, &first_empty),
-        (Included(5), Excluded(5)),
-    );
+    assert_eq!(span(&first_empty, &second_empty), (Included(5), Excluded(5)),);
+    assert_eq!(span(&second_empty, &first_empty), (Included(5), Excluded(5)),);
 }
 
 #[test]
@@ -93,8 +79,7 @@ fn test_operation_results_obey_range_relationships() {
     let left = 1..5;
     let right = 7..=10;
     let combined = span(&left, &right);
-    let separation = gap(&left, &right)
-        .expect("disconnected nonempty ranges should have a gap");
+    let separation = gap(&left, &right).expect("disconnected nonempty ranges should have a gap");
     assert!(encloses(&combined, &left));
     assert!(encloses(&combined, &right));
     assert!(!overlaps(&separation, &left));

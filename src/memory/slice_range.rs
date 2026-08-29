@@ -45,11 +45,7 @@ impl SliceRange {
     /// `Some(end)` when `start + count` is valid and not overflowed.
     #[must_use]
     #[inline]
-    pub const fn range_end(
-        len: usize,
-        start: usize,
-        count: usize,
-    ) -> Option<usize> {
+    pub const fn range_end(len: usize, start: usize, count: usize) -> Option<usize> {
         match start.checked_add(count) {
             Some(end) if len >= end => Some(end),
             _ => None,
@@ -92,13 +88,7 @@ impl SliceRange {
     /// Returns [`ErrorKind::InvalidInput`] with `message` when the range does
     /// not fit or overflows.
     #[inline]
-    pub fn checked_range_end(
-        len: usize,
-        start: usize,
-        count: usize,
-        message: &'static str,
-    ) -> Result<usize> {
-        Self::range_end(len, start, count)
-            .ok_or_else(|| Error::new(ErrorKind::InvalidInput, message))
+    pub fn checked_range_end(len: usize, start: usize, count: usize, message: &'static str) -> Result<usize> {
+        Self::range_end(len, start, count).ok_or_else(|| Error::new(ErrorKind::InvalidInput, message))
     }
 }

@@ -99,10 +99,8 @@ where
     if is_empty(outer) {
         return false;
     }
-    compare_lower_bounds(outer.start_bound(), inner.start_bound())
-        != Ordering::Greater
-        && compare_upper_bounds(outer.end_bound(), inner.end_bound())
-            != Ordering::Less
+    compare_lower_bounds(outer.start_bound(), inner.start_bound()) != Ordering::Greater
+        && compare_upper_bounds(outer.end_bound(), inner.end_bound()) != Ordering::Less
 }
 
 /// Reports whether two ranges share at least one value.
@@ -144,16 +142,12 @@ where
     if is_empty(left) || is_empty(right) {
         return false;
     }
-    let lower = if compare_lower_bounds(left.start_bound(), right.start_bound())
-        == Ordering::Less
-    {
+    let lower = if compare_lower_bounds(left.start_bound(), right.start_bound()) == Ordering::Less {
         right.start_bound()
     } else {
         left.start_bound()
     };
-    let upper = if compare_upper_bounds(left.end_bound(), right.end_bound())
-        == Ordering::Greater
-    {
+    let upper = if compare_upper_bounds(left.end_bound(), right.end_bound()) == Ordering::Greater {
         right.end_bound()
     } else {
         left.end_bound()
@@ -207,9 +201,7 @@ where
     if is_empty(left) || is_empty(right) {
         return true;
     }
-    if compare_lower_bounds(left.start_bound(), right.start_bound())
-        == Ordering::Greater
-    {
+    if compare_lower_bounds(left.start_bound(), right.start_bound()) == Ordering::Greater {
         !bounds_have_gap(right.end_bound(), left.start_bound())
     } else {
         !bounds_have_gap(left.end_bound(), right.start_bound())

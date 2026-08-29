@@ -45,9 +45,7 @@ fn build_workload() -> Vec<ReadCase> {
         let len = MIN_BUFFER_LEN + (next_random(&mut state) as usize % span);
         let mut buffer = Vec::with_capacity(len);
         for index in 0..len {
-            buffer.push(
-                (next_random(&mut state) as u8).wrapping_add(index as u8),
-            );
+            buffer.push((next_random(&mut state) as u8).wrapping_add(index as u8));
         }
 
         let mut indices = Vec::with_capacity(ACCESSES_PER_BUFFER);
@@ -92,8 +90,7 @@ fn read_unchecked(workload: &[ReadCase]) -> u64 {
 fn bench_variable_length_reads(criterion: &mut Criterion) {
     let workload = build_workload();
     let access_count = (BUFFER_COUNT * ACCESSES_PER_BUFFER) as u64;
-    let mut group =
-        criterion.benchmark_group("unchecked_slice_variable_lengths");
+    let mut group = criterion.benchmark_group("unchecked_slice_variable_lengths");
     group.throughput(Throughput::Elements(access_count));
 
     group.bench_function("safe_indexing", |bencher| {

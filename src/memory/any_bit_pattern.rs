@@ -58,6 +58,4 @@ macro_rules! impl_any_bit_pattern {
     };
 }
 
-impl_any_bit_pattern!(
-    u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize, f32, f64,
-);
+impl_any_bit_pattern!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize, f32, f64,);

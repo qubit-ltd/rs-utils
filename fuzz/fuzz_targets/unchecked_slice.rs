@@ -31,10 +31,7 @@ fn fuzz_ranges(data: &[u8]) {
     let expected = start.checked_add(count).filter(|&end| end <= len);
 
     assert_eq!(expected, SliceRange::range_end(len, start, count));
-    assert_eq!(
-        expected.is_some(),
-        SliceRange::range_fits(len, start, count)
-    );
+    assert_eq!(expected.is_some(), SliceRange::range_fits(len, start, count));
 }
 
 /// Checks indexed element and subslice operations against safe indexing.
@@ -73,8 +70,7 @@ fn fuzz_elements(data: &[u8]) {
     assert_eq!(expected, actual);
 
     // SAFETY: `start` and `count` were constrained to a valid mutable range.
-    let actual_range =
-        unsafe { UncheckedSlice::subslice_mut(&mut actual, start, count) };
+    let actual_range = unsafe { UncheckedSlice::subslice_mut(&mut actual, start, count) };
     assert_eq!(&expected[start..start + count], actual_range);
 }
 
@@ -85,21 +81,13 @@ fn fuzz_copies(data: &[u8]) {
     let count = fuzz_usize(data, 6) % (source.len() + 1);
     let source_index = fuzz_usize(data, 7) % (source.len() - count + 1);
     let mut destination = vec![0_u8; source.len() + 1];
-    let destination_index =
-        fuzz_usize(data, 8) % (destination.len() - count + 1);
+    let destination_index = fuzz_usize(data, 8) % (destination.len() - count + 1);
     let mut expected = destination.clone();
-    expected[destination_index..destination_index + count]
-        .copy_from_slice(&source[source_index..source_index + count]);
+    expected[destination_index..destination_index + count].copy_from_slice(&source[source_index..source_index + count]);
 
     // SAFETY: Both ranges were constrained to valid, separate allocations.
     unsafe {
-        UncheckedSlice::copy_nonoverlapping(
-            source,
-            source_index,
-            &mut destination,
-            destination_index,
-            count,
-        );
+        UncheckedSlice::copy_nonoverlapping(source, source_index, &mut destination, destination_index, count);
     }
     assert_eq!(expected, destination);
 
@@ -112,12 +100,7 @@ fn fuzz_copies(data: &[u8]) {
     // SAFETY: Both ranges were constrained to the same valid allocation;
     // overlapping ranges are allowed by `copy_within`.
     unsafe {
-        UncheckedSlice::copy_within(
-            &mut actual,
-            source_index,
-            destination_index,
-            count,
-        );
+        UncheckedSlice::copy_within(&mut actual, source_index, destination_index, count);
     }
     assert_eq!(expected, actual);
 }
@@ -135,8 +118,7 @@ fn fuzz_unaligned_values(data: &[u8]) {
     );
     // SAFETY: The selected range contains a valid initialized `u32` byte
     // representation; every bit pattern is valid for `u32`.
-    let actual =
-        unsafe { UncheckedSlice::read_ne_unaligned::<u32>(data, index) };
+    let actual = unsafe { UncheckedSlice::read_ne_unaligned::<u32>(data, index) };
     assert_eq!(expected, actual);
 
     let mut output = vec![0_u8; data.len()];
@@ -145,20 +127,14 @@ fn fuzz_unaligned_values(data: &[u8]) {
     unsafe {
         UncheckedSlice::write_ne_unaligned(&mut output, index, actual);
     }
-    assert_eq!(
-        actual.to_ne_bytes(),
-        output[index..index + size_of::<u32>()]
-    );
+    assert_eq!(actual.to_ne_bytes(), output[index..index + size_of::<u32>()]);
 }
 
 /// Derives a `usize` while deliberately retaining overflow-heavy inputs.
 fn fuzz_usize(data: &[u8], offset: usize) -> usize {
     let mut value = 0_usize;
     for index in 0..size_of::<usize>() {
-        let byte = data
-            .get(offset.wrapping_add(index))
-            .copied()
-            .unwrap_or_default();
+        let byte = data.get(offset.wrapping_add(index)).copied().unwrap_or_default();
         value = value.rotate_left(8) ^ usize::from(byte);
     }
     if data.get(offset).is_some_and(|byte| byte & 0x80 != 0) {

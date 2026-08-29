@@ -50,10 +50,7 @@ where
     T: Clone,
     R: RangeBounds<T>,
 {
-    (
-        clone_bound(range.start_bound()),
-        clone_bound(range.end_bound()),
-    )
+    (clone_bound(range.start_bound()), clone_bound(range.end_bound()))
 }
 
 /// Compares lower bounds by the first value admitted by each boundary.
@@ -69,10 +66,7 @@ where
 /// # Returns
 ///
 /// The ordering of `left` relative to `right` when both are lower bounds.
-pub(super) fn compare_lower_bounds<T>(
-    left: Bound<&T>,
-    right: Bound<&T>,
-) -> Ordering
+pub(super) fn compare_lower_bounds<T>(left: Bound<&T>, right: Bound<&T>) -> Ordering
 where
     T: Ord + ?Sized,
 {
@@ -80,14 +74,9 @@ where
         (Unbounded, Unbounded) => Ordering::Equal,
         (Unbounded, _) => Ordering::Less,
         (_, Unbounded) => Ordering::Greater,
-        (Included(left), Included(right))
-        | (Excluded(left), Excluded(right)) => left.cmp(right),
-        (Included(left), Excluded(right)) => {
-            left.cmp(right).then(Ordering::Less)
-        }
-        (Excluded(left), Included(right)) => {
-            left.cmp(right).then(Ordering::Greater)
-        }
+        (Included(left), Included(right)) | (Excluded(left), Excluded(right)) => left.cmp(right),
+        (Included(left), Excluded(right)) => left.cmp(right).then(Ordering::Less),
+        (Excluded(left), Included(right)) => left.cmp(right).then(Ordering::Greater),
     }
 }
 
@@ -104,10 +93,7 @@ where
 /// # Returns
 ///
 /// The ordering of `left` relative to `right` when both are upper bounds.
-pub(super) fn compare_upper_bounds<T>(
-    left: Bound<&T>,
-    right: Bound<&T>,
-) -> Ordering
+pub(super) fn compare_upper_bounds<T>(left: Bound<&T>, right: Bound<&T>) -> Ordering
 where
     T: Ord + ?Sized,
 {
@@ -115,14 +101,9 @@ where
         (Unbounded, Unbounded) => Ordering::Equal,
         (Unbounded, _) => Ordering::Greater,
         (_, Unbounded) => Ordering::Less,
-        (Included(left), Included(right))
-        | (Excluded(left), Excluded(right)) => left.cmp(right),
-        (Included(left), Excluded(right)) => {
-            left.cmp(right).then(Ordering::Greater)
-        }
-        (Excluded(left), Included(right)) => {
-            left.cmp(right).then(Ordering::Less)
-        }
+        (Included(left), Included(right)) | (Excluded(left), Excluded(right)) => left.cmp(right),
+        (Included(left), Excluded(right)) => left.cmp(right).then(Ordering::Greater),
+        (Excluded(left), Included(right)) => left.cmp(right).then(Ordering::Less),
     }
 }
 
@@ -197,10 +178,7 @@ where
 /// # Returns
 ///
 /// `true` when at least one value lies outside both ranges between the bounds.
-pub(super) fn bounds_have_gap<T>(
-    left_upper: Bound<&T>,
-    right_lower: Bound<&T>,
-) -> bool
+pub(super) fn bounds_have_gap<T>(left_upper: Bound<&T>, right_lower: Bound<&T>) -> bool
 where
     T: Ord + ?Sized,
 {

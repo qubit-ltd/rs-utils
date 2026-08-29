@@ -202,23 +202,14 @@ impl UncheckedSlice {
     /// the addition does not overflow.
     #[must_use]
     #[inline(always)]
-    pub unsafe fn subslice_mut<T>(
-        output: &mut [T],
-        start: usize,
-        count: usize,
-    ) -> &mut [T] {
+    pub unsafe fn subslice_mut<T>(output: &mut [T], start: usize, count: usize) -> &mut [T] {
         debug_assert!(
             SliceRange::range_fits(output.len(), start, count),
             "subslice range exceeds output buffer"
         );
         // SAFETY: The caller guarantees that the range is valid inside
         // `output`.
-        unsafe {
-            core::slice::from_raw_parts_mut(
-                output.as_mut_ptr().add(start),
-                count,
-            )
-        }
+        unsafe { core::slice::from_raw_parts_mut(output.as_mut_ptr().add(start), count) }
     }
 
     /// Copies `count` values between unchecked slice offsets.
@@ -298,12 +289,7 @@ impl UncheckedSlice {
     /// `source_index + count` and `destination_index + count` do not overflow
     /// `usize`.
     #[inline(always)]
-    pub unsafe fn copy_within<T: Copy>(
-        buffer: &mut [T],
-        source_index: usize,
-        destination_index: usize,
-        count: usize,
-    ) {
+    pub unsafe fn copy_within<T: Copy>(buffer: &mut [T], source_index: usize, destination_index: usize, count: usize) {
         debug_assert!(
             SliceRange::range_fits(buffer.len(), source_index, count),
             "unchecked source range exceeds buffer"
@@ -370,10 +356,7 @@ impl UncheckedSlice {
     /// ```
     #[must_use]
     #[inline(always)]
-    pub unsafe fn read_ne_unaligned<T: AnyBitPattern>(
-        input: &[u8],
-        index: usize,
-    ) -> T {
+    pub unsafe fn read_ne_unaligned<T: AnyBitPattern>(input: &[u8], index: usize) -> T {
         debug_assert!(
             SliceRange::range_fits(input.len(), index, mem::size_of::<T>()),
             "unchecked input range exceeds source buffer"
@@ -415,11 +398,7 @@ impl UncheckedSlice {
     /// bytewise representation. Types containing padding, references, or
     /// pointers require additional justification from the caller.
     #[inline(always)]
-    pub unsafe fn write_ne_unaligned<T: AnyBitPattern>(
-        output: &mut [u8],
-        index: usize,
-        value: T,
-    ) {
+    pub unsafe fn write_ne_unaligned<T: AnyBitPattern>(output: &mut [u8], index: usize, value: T) {
         debug_assert!(
             SliceRange::range_fits(output.len(), index, mem::size_of::<T>()),
             "unchecked output range exceeds destination buffer"

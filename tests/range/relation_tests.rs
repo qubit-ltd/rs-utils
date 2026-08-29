@@ -63,10 +63,7 @@ fn test_is_connected_distinguishes_touching_bound_types() {
     assert!(is_connected(&(1..2), &(2..3)));
     assert!(is_connected(&(1..=2), &(Excluded(2), Included(3))));
     assert!(is_connected(&(Excluded(2), Included(3)), &(1..=2)));
-    assert!(!is_connected(
-        &(Included(1), Excluded(2)),
-        &(Excluded(2), Included(3)),
-    ));
+    assert!(!is_connected(&(Included(1), Excluded(2)), &(Excluded(2), Included(3)),));
 }
 
 #[test]

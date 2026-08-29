@@ -38,9 +38,6 @@ use core::num::NonZeroUsize;
 pub const fn nonzero(value: usize) -> NonZeroUsize {
     match NonZeroUsize::new(value) {
         Some(value) => value,
-        None => panic!(concat!(
-            "qubit_utils",
-            "::nonzero(): value must be non-zero",
-        )),
+        None => panic!(concat!("qubit_utils", "::nonzero(): value must be non-zero",)),
     }
 }

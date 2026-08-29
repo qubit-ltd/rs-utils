@@ -70,16 +70,12 @@ where
     if is_empty(left) || is_empty(right) {
         return None;
     }
-    let lower = if compare_lower_bounds(left.start_bound(), right.start_bound())
-        == Ordering::Less
-    {
+    let lower = if compare_lower_bounds(left.start_bound(), right.start_bound()) == Ordering::Less {
         clone_bound(right.start_bound())
     } else {
         clone_bound(left.start_bound())
     };
-    let upper = if compare_upper_bounds(left.end_bound(), right.end_bound())
-        == Ordering::Greater
-    {
+    let upper = if compare_upper_bounds(left.end_bound(), right.end_bound()) == Ordering::Greater {
         clone_bound(right.end_bound())
     } else {
         clone_bound(left.end_bound())
@@ -144,23 +140,16 @@ where
         (true, false) => clone_bounds(right),
         (false, true) => clone_bounds(left),
         (false, false) => {
-            let lower = if compare_lower_bounds(
-                left.start_bound(),
-                right.start_bound(),
-            ) == Ordering::Greater
-            {
+            let lower = if compare_lower_bounds(left.start_bound(), right.start_bound()) == Ordering::Greater {
                 clone_bound(right.start_bound())
             } else {
                 clone_bound(left.start_bound())
             };
-            let upper =
-                if compare_upper_bounds(left.end_bound(), right.end_bound())
-                    == Ordering::Less
-                {
-                    clone_bound(right.end_bound())
-                } else {
-                    clone_bound(left.end_bound())
-                };
+            let upper = if compare_upper_bounds(left.end_bound(), right.end_bound()) == Ordering::Less {
+                clone_bound(right.end_bound())
+            } else {
+                clone_bound(left.end_bound())
+            };
             (lower, upper)
         }
     }
@@ -213,9 +202,7 @@ where
         return None;
     }
     let (earlier_upper, later_lower) =
-        if compare_lower_bounds(left.start_bound(), right.start_bound())
-            == Ordering::Greater
-        {
+        if compare_lower_bounds(left.start_bound(), right.start_bound()) == Ordering::Greater {
             (right.end_bound(), left.start_bound())
         } else {
             (left.end_bound(), right.start_bound())
