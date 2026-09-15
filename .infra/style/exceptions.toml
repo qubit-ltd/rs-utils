@@ -1,0 +1,16 @@
+format = 1
+
+[[exceptions]]
+rule = "coverage-cfg"
+path = "src/lib.rs"
+reason = "Re-export coverage-only allocation failure hooks for integration tests."
+
+[[exceptions]]
+rule = "coverage-cfg"
+path = "src/memory/allocation.rs"
+reason = "Inject thread-local reserve failure hooks so allocation error propagation paths can be exercised under coverage builds."
+
+[[exceptions]]
+rule = "coverage-cfg"
+path = "src/memory/mod.rs"
+reason = "Re-export coverage-only allocation failure hooks from the memory module for integration tests."

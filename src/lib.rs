@@ -10,7 +10,6 @@
 //! The crate provides reusable standard-range algebra, runtime-state, non-zero
 //! construction, fallible allocation, range validation, and unchecked-slice
 //! utilities.
-// qubit-style: allow coverage-cfg
 
 mod internal;
 pub mod math;

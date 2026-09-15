@@ -6,7 +6,6 @@
 //    Licensed under the Apache License, Version 2.0.
 // =============================================================================
 //! Low-level memory and slice utilities.
-// qubit-style: allow coverage-cfg
 
 mod allocation;
 mod any_bit_pattern;
