@@ -29,9 +29,9 @@ miri = true
 [dependencies]
 
 [dev-dependencies]
-criterion = { version = "0.8", default-features = false }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+criterion = { version = "^0.8", default-features = false }
+serde = { version = "^1.0", features = ["derive"] }
+serde_json = "^1.0"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(coverage)'] }
