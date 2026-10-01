@@ -13,6 +13,7 @@ mod slice_range;
 mod unchecked_slice;
 
 pub use allocation::allocation_error;
+// qubit-style: allow coverage-cfg
 #[cfg(coverage)]
 #[doc(hidden)]
 pub use allocation::coverage_fail_next_reserve;

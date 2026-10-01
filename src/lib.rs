@@ -22,6 +22,7 @@ pub use memory::AnyBitPattern;
 pub use memory::SliceRange;
 pub use memory::UncheckedSlice;
 pub use memory::allocation_error;
+// qubit-style: allow coverage-cfg
 #[cfg(coverage)]
 #[doc(hidden)]
 pub use memory::coverage_fail_next_reserve;
