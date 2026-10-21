@@ -86,6 +86,7 @@ use std::hash::Hasher;
 #[must_use]
 #[derive(Clone, Copy, Debug)]
 pub struct Transient<T> {
+    /// Runtime value retained for use without affecting equality or hashing.
     value: T,
 }
 

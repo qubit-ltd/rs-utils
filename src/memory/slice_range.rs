@@ -7,7 +7,6 @@
 // =============================================================================
 //! Checked range arithmetic helpers for slice-like bounds validation.
 
-use std::convert::Infallible;
 use std::io::Error;
 use std::io::ErrorKind;
 use std::io::Result;
@@ -26,10 +25,7 @@ use std::io::Result;
 /// assert_eq!(SliceRange::range_end(8, 2, 4), Some(6));
 /// assert!(!SliceRange::range_fits(8, 6, 4));
 /// ```
-pub struct SliceRange {
-    /// Prevents construction of this namespace type.
-    _private: Infallible,
-}
+pub enum SliceRange {}
 
 impl SliceRange {
     /// Returns the exclusive end index of a checked range.

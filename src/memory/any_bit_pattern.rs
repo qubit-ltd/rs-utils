@@ -24,6 +24,16 @@ use crate::internal::sealed::Sealed;
 /// invariants. User-defined types may contain padding or fields with restricted
 /// representations, even when they implement [`Copy`].
 ///
+/// # Examples
+///
+/// ```
+/// use qubit_utils::AnyBitPattern;
+///
+/// fn accepts_any_bit_pattern<T: AnyBitPattern>() {}
+///
+/// accepts_any_bit_pattern::<u32>();
+/// ```
+///
 /// External implementations are rejected because this trait is sealed:
 ///
 /// ```compile_fail

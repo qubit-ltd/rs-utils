@@ -60,7 +60,6 @@ use super::relation::is_empty;
 /// );
 /// assert_eq!(intersection(&(1..5), &(5..10)), None);
 /// ```
-#[must_use]
 pub fn intersection<T, L, R>(left: &L, right: &R) -> Option<Bounds<T>>
 where
     T: Ord + Clone,
@@ -191,7 +190,6 @@ where
 /// );
 /// assert_eq!(gap(&(1..2), &(2..3)), None);
 /// ```
-#[must_use]
 pub fn gap<T, L, R>(left: &L, right: &R) -> Option<Bounds<T>>
 where
     T: Ord + Clone,
