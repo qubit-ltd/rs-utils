@@ -25,6 +25,7 @@ use super::Bounds;
 /// # Returns
 ///
 /// An owned bound with the same inclusion state and endpoint value.
+#[must_use]
 pub(super) fn clone_bound<T>(bound: Bound<&T>) -> Bound<T>
 where
     T: Clone,
@@ -45,6 +46,7 @@ where
 /// # Returns
 ///
 /// Owned lower and upper bounds preserving the source range semantics.
+#[must_use]
 pub(super) fn clone_bounds<T, R>(range: &R) -> Bounds<T>
 where
     T: Clone,
@@ -66,6 +68,7 @@ where
 /// # Returns
 ///
 /// The ordering of `left` relative to `right` when both are lower bounds.
+#[must_use]
 pub(super) fn compare_lower_bounds<T>(left: Bound<&T>, right: Bound<&T>) -> Ordering
 where
     T: Ord + ?Sized,
@@ -93,6 +96,7 @@ where
 /// # Returns
 ///
 /// The ordering of `left` relative to `right` when both are upper bounds.
+#[must_use]
 pub(super) fn compare_upper_bounds<T>(left: Bound<&T>, right: Bound<&T>) -> Ordering
 where
     T: Ord + ?Sized,
@@ -118,6 +122,7 @@ where
 ///
 /// The lower-bound ordering unless the lower bounds are equal, in which case
 /// the upper-bound ordering is returned.
+#[must_use]
 pub(super) fn compare_range_bounds<T, L, R>(left: &L, right: &R) -> Ordering
 where
     T: Ord + ?Sized,
@@ -143,6 +148,7 @@ where
 /// # Returns
 ///
 /// `true` when the boundary pair admits no value, or `false` otherwise.
+#[must_use]
 pub(super) fn bounds_are_empty<T>(lower: Bound<&T>, upper: Bound<&T>) -> bool
 where
     T: PartialOrd + ?Sized,
@@ -178,6 +184,7 @@ where
 /// # Returns
 ///
 /// `true` when at least one value lies outside both ranges between the bounds.
+#[must_use]
 pub(super) fn bounds_have_gap<T>(left_upper: Bound<&T>, right_lower: Bound<&T>) -> bool
 where
     T: Ord + ?Sized,

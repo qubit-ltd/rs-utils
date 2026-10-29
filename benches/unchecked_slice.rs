@@ -61,6 +61,7 @@ fn build_workload() -> Vec<ReadCase> {
 
 /// Reads each prepared offset with ordinary bounds-checked indexing.
 #[inline(never)]
+#[must_use]
 fn read_safe(workload: &[ReadCase]) -> u64 {
     let mut checksum = 0_u64;
     for case in workload {
@@ -73,6 +74,7 @@ fn read_safe(workload: &[ReadCase]) -> u64 {
 
 /// Reads each prepared offset through the unchecked slice helper.
 #[inline(never)]
+#[must_use]
 fn read_unchecked(workload: &[ReadCase]) -> u64 {
     let mut checksum = 0_u64;
     for case in workload {

@@ -39,6 +39,7 @@ impl SliceRange {
     /// # Returns
     ///
     /// `Some(end)` when `start + count` is valid and not overflowed.
+    /// `None` when the range exceeds `len` or the addition overflows.
     #[must_use]
     #[inline]
     pub const fn range_end(len: usize, start: usize, count: usize) -> Option<usize> {

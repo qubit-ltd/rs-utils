@@ -33,6 +33,11 @@ use std::hash::Hasher;
 /// The inner value is therefore excluded from persistence unless serialized
 /// manually.
 ///
+/// # Type Parameters
+///
+/// - `T`: The runtime value retained by the wrapper and excluded from its
+///   equality and hash semantics.
+///
 /// # Examples
 ///
 /// ```

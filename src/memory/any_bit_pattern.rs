@@ -56,6 +56,8 @@ pub unsafe trait AnyBitPattern: Copy + Sealed {
     // empty
 }
 
+/// Implements the sealed marker for primitive numeric types with valid bit
+/// patterns.
 macro_rules! impl_any_bit_pattern {
     ($($type:ty),+ $(,)?) => {
         $(
