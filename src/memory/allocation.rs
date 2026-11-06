@@ -46,9 +46,9 @@ thread_local! {
 ///
 /// Coverage-only helper for exercising allocation error propagation paths that
 /// are impractical to trigger with ordinary test inputs.
-#[cfg(coverage)]
 #[doc(hidden)]
 #[inline(always)]
+#[cfg(coverage)]
 pub fn coverage_fail_next_reserve() {
     COVERAGE_RESERVE_FAIL_AFTER.with(|state| state.set(0));
 }
@@ -62,9 +62,9 @@ pub fn coverage_fail_next_reserve() {
 ///
 /// - `successful_attempts`: Number of reserve calls allowed to succeed before
 ///   the injected failure.
-#[cfg(coverage)]
 #[doc(hidden)]
 #[inline(always)]
+#[cfg(coverage)]
 pub fn coverage_fail_reserve_after(successful_attempts: usize) {
     COVERAGE_RESERVE_FAIL_AFTER.with(|state| state.set(successful_attempts));
 }
@@ -77,26 +77,26 @@ pub fn coverage_fail_reserve_after(successful_attempts: usize) {
 /// # Parameters
 ///
 /// - `max_additional`: Largest additional capacity request allowed to succeed.
-#[cfg(coverage)]
 #[doc(hidden)]
 #[inline(always)]
+#[cfg(coverage)]
 pub fn coverage_fail_reserve_above(max_additional: usize) {
     COVERAGE_RESERVE_MAX_ADDITIONAL.with(|state| state.set(max_additional));
 }
 
 /// Makes the next [`try_reserve_string`] call fail without affecting vector
 /// reserve calls.
-#[cfg(coverage)]
 #[doc(hidden)]
 #[inline(always)]
+#[cfg(coverage)]
 pub fn coverage_fail_next_string_reserve() {
     COVERAGE_FAIL_NEXT_STRING_RESERVE.with(|state| state.set(true));
 }
 
 /// Clears coverage-only reserve hooks between tests.
-#[cfg(coverage)]
 #[doc(hidden)]
 #[inline]
+#[cfg(coverage)]
 pub fn coverage_reset_reserve_hooks() {
     COVERAGE_RESERVE_FAIL_AFTER.with(|state| state.set(usize::MAX));
     COVERAGE_RESERVE_MAX_ADDITIONAL.with(|state| state.set(usize::MAX));

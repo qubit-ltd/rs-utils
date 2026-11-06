@@ -106,7 +106,7 @@ impl UncheckedSlice {
     /// # Safety
     ///
     /// The caller must guarantee that `index < input.len()`.
-    #[must_use]
+    #[must_use = "the referenced element must be used"]
     #[inline(always)]
     pub unsafe fn get<T>(input: &[T], index: usize) -> &T {
         // SAFETY: The caller guarantees that `index` is in-bounds.
@@ -132,7 +132,7 @@ impl UncheckedSlice {
     /// # Safety
     ///
     /// The caller must guarantee that `index < output.len()`.
-    #[must_use]
+    #[must_use = "the referenced element must be used"]
     #[inline(always)]
     pub unsafe fn get_mut<T>(output: &mut [T], index: usize) -> &mut T {
         // SAFETY: The caller guarantees that `index` is in-bounds.

@@ -212,6 +212,10 @@ where
 
 /// Converts an earlier range's upper bound into the gap's lower bound.
 ///
+/// # Type Parameters
+///
+/// - `T`: Endpoint type that can be cloned into the owned result.
+///
 /// # Parameters
 ///
 /// - `bound`: Upper bound immediately before a known nonempty gap.
@@ -232,6 +236,10 @@ where
 }
 
 /// Converts a later range's lower bound into the gap's upper bound.
+///
+/// # Type Parameters
+///
+/// - `T`: Endpoint type that can be cloned into the owned result.
 ///
 /// # Parameters
 ///

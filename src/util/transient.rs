@@ -119,7 +119,7 @@ impl<T> Transient<T> {
     /// # Returns
     ///
     /// A shared reference to the wrapped value.
-    #[must_use]
+    #[must_use = "inspect or use the wrapped runtime-only value"]
     #[inline(always)]
     pub const fn get(&self) -> &T {
         &self.value
@@ -130,7 +130,7 @@ impl<T> Transient<T> {
     /// # Returns
     ///
     /// A mutable reference to the wrapped value.
-    #[must_use]
+    #[must_use = "inspect or use the wrapped runtime-only value"]
     #[inline(always)]
     pub fn get_mut(&mut self) -> &mut T {
         &mut self.value
@@ -176,6 +176,10 @@ where
 
 impl<T> From<T> for Transient<T> {
     /// Wraps a value as transient runtime state.
+    ///
+    /// # Parameters
+    ///
+    /// - `value`: Value to store as runtime-only state.
     #[inline]
     fn from(value: T) -> Self {
         Self::new(value)
@@ -184,6 +188,11 @@ impl<T> From<T> for Transient<T> {
 
 impl<T> PartialEq for Transient<T> {
     /// Treats all transient values of the same type as equal.
+    ///
+    /// # Parameters
+    ///
+    /// - `_other`: Other wrapper, intentionally ignored because transient
+    ///   contents do not affect equality.
     #[inline]
     fn eq(&self, _other: &Self) -> bool {
         true
@@ -194,6 +203,14 @@ impl<T> Eq for Transient<T> {}
 
 impl<T> Hash for Transient<T> {
     /// Excludes the runtime-only value from the hash.
+    ///
+    /// # Type Parameters
+    ///
+    /// - `H`: Hasher receiving no bytes for this runtime-only value.
+    ///
+    /// # Parameters
+    ///
+    /// - `_state`: Hasher, intentionally left unchanged.
     #[inline]
     fn hash<H>(&self, _state: &mut H)
     where

@@ -18,6 +18,10 @@ use super::Bounds;
 
 /// Clones one borrowed standard-library bound into an owned bound.
 ///
+/// # Type Parameters
+///
+/// - `T`: Endpoint type that can be cloned into the owned bound.
+///
 /// # Parameters
 ///
 /// - `bound`: Borrowed bound obtained from a `RangeBounds` implementation.
@@ -39,6 +43,11 @@ where
 
 /// Clones both endpoints from a borrowed range into an owned boundary pair.
 ///
+/// # Type Parameters
+///
+/// - `T`: Endpoint type that can be cloned into the owned bounds.
+/// - `R`: Range type that provides bounds over `T`.
+///
 /// # Parameters
 ///
 /// - `range`: Range whose lower and upper bounds are cloned.
@@ -59,6 +68,10 @@ where
 ///
 /// An unbounded lower bound sorts first. At the same finite endpoint, an
 /// included bound sorts before an excluded bound because it starts earlier.
+///
+/// # Type Parameters
+///
+/// - `T`: Endpoint type whose values define the bound ordering.
 ///
 /// # Parameters
 ///
@@ -88,6 +101,10 @@ where
 /// An unbounded upper bound sorts last. At the same finite endpoint, an
 /// excluded bound sorts before an included bound because it ends earlier.
 ///
+/// # Type Parameters
+///
+/// - `T`: Endpoint type whose values define the bound ordering.
+///
 /// # Parameters
 ///
 /// - `left`: Upper bound from the left range.
@@ -112,6 +129,12 @@ where
 }
 
 /// Compares two complete ranges lexicographically by lower then upper bound.
+///
+/// # Type Parameters
+///
+/// - `T`: Endpoint type used by both ranges.
+/// - `L`: Type of the first range.
+/// - `R`: Type of the second range.
 ///
 /// # Parameters
 ///
@@ -139,6 +162,10 @@ where
 /// endpoints are treated as empty, matching the proposed standard-library
 /// `RangeBounds::is_empty` behavior. Equal finite endpoints are nonempty only
 /// when both endpoints are included.
+///
+/// # Type Parameters
+///
+/// - `T`: Endpoint type compared to determine whether the range is empty.
 ///
 /// # Parameters
 ///
@@ -175,6 +202,10 @@ where
 /// `left_upper` must belong to the range that starts first, and `right_lower`
 /// must belong to the range that starts second. Equal endpoints leave a gap
 /// only when both ranges exclude the shared endpoint.
+///
+/// # Type Parameters
+///
+/// - `T`: Ordered endpoint type used to determine whether a gap exists.
 ///
 /// # Parameters
 ///

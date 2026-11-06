@@ -15,6 +15,6 @@ use qubit_utils::range::Bounds;
 #[test]
 fn test_bounds_implements_standard_range_bounds() {
     let range: Bounds<i32> = (Excluded(1), Included(5));
-    assert!(!range.contains(&1));
-    assert!(range.contains(&5));
+    assert!(!range.contains(&1), "the excluded lower bound must not be contained");
+    assert!(range.contains(&5), "the included upper bound must be contained");
 }
