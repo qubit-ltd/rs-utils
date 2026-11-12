@@ -6,6 +6,8 @@
 //    Licensed under the Apache License, Version 2.0.
 // =============================================================================
 
+use std::cell::Cell;
+
 use qubit_utils::UncheckedSlice;
 
 #[test]
@@ -28,6 +30,33 @@ fn test_write_unchecked_moves_non_copy_value() {
         UncheckedSlice::write(&mut output, 1, String::from("updated"));
     }
     assert_eq!(output[1], "updated");
+}
+
+#[test]
+fn test_write_drops_replaced_value_immediately_and_new_value_once() {
+    struct DropProbe<'a> {
+        drops: &'a Cell<usize>,
+    }
+
+    impl Drop for DropProbe<'_> {
+        fn drop(&mut self) {
+            self.drops.set(self.drops.get() + 1);
+        }
+    }
+
+    let old_drops = Cell::new(0);
+    let new_drops = Cell::new(0);
+    {
+        let mut output = [DropProbe { drops: &old_drops }];
+        // SAFETY: Index 0 is valid in the initialized one-element array.
+        unsafe {
+            UncheckedSlice::write(&mut output, 0, DropProbe { drops: &new_drops });
+        }
+        assert_eq!(old_drops.get(), 1, "replacement must drop the old value immediately");
+        assert_eq!(new_drops.get(), 0, "the new value must remain alive in the array");
+    }
+    assert_eq!(old_drops.get(), 1, "the old value must not be dropped again");
+    assert_eq!(new_drops.get(), 1, "array destruction must drop the new value once");
 }
 
 #[test]
