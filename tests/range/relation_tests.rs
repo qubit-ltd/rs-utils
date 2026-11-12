@@ -33,6 +33,14 @@ fn test_is_empty_treats_incomparable_finite_endpoints_as_empty() {
 }
 
 #[test]
+fn test_relations_use_endpoint_order_without_discrete_normalization() {
+    let open = (Excluded(1_i32), Excluded(2_i32));
+    assert!(!is_empty(&open));
+    assert!(overlaps(&open, &open));
+    assert!(!is_connected(&(1_i32..=1), &(2_i32..=2)));
+}
+
+#[test]
 fn test_encloses_handles_bounded_and_unbounded_ranges() {
     assert!(encloses(&(1..=10), &(3..5)));
     assert!(!encloses(&(3..5), &(1..=10)));

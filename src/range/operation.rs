@@ -24,11 +24,12 @@ use super::internal::compare_upper_bounds;
 use super::relation::is_connected;
 use super::relation::is_empty;
 
-/// Returns the nonempty intersection shared by two ranges.
+/// Returns the intersection of two ranges under the module's
+/// [endpoint-order semantics](crate::range#endpoint-order-semantics).
 ///
 /// The returned boundary pair owns cloned endpoint values and itself
 /// implements [`RangeBounds<T>`]. Empty inputs, disjoint ranges, and ranges
-/// that only touch without sharing a value have no nonempty intersection.
+/// whose boundary intersection is empty have no intersection.
 ///
 /// # Type Parameters
 ///
@@ -43,8 +44,9 @@ use super::relation::is_empty;
 ///
 /// # Returns
 ///
-/// `Some(bounds)` for a nonempty intersection, or `None` when the intersection
-/// contains no value.
+/// `Some(bounds)` for an intersection whose boundary pair is nonempty under
+/// the module's endpoint-order semantics, or `None` when it is empty. A
+/// discrete domain may have no value satisfying the returned bounds.
 ///
 /// # Examples
 ///
@@ -86,7 +88,8 @@ where
     }
 }
 
-/// Returns the smallest range that encloses both input ranges.
+/// Returns the smallest range that encloses both input ranges under the
+/// module's [endpoint-order semantics](crate::range#endpoint-order-semantics).
 ///
 /// An empty input does not enlarge the other range. When both inputs are
 /// empty, the lexicographically smaller boundary representation is returned
@@ -105,7 +108,7 @@ where
 ///
 /// # Returns
 ///
-/// Owned bounds for the minimal enclosing range.
+/// Owned bounds for the minimal enclosing boundary representation.
 ///
 /// # Examples
 ///
@@ -154,7 +157,8 @@ where
     }
 }
 
-/// Returns the values lying strictly between two disconnected ranges.
+/// Returns the boundary pair between two disconnected ranges under the
+/// module's [endpoint-order semantics](crate::range#endpoint-order-semantics).
 ///
 /// The result complements the earlier range's upper bound and the later
 /// range's lower bound. Empty, overlapping, touching, or otherwise connected
@@ -173,8 +177,10 @@ where
 ///
 /// # Returns
 ///
-/// `Some(bounds)` for the nonempty gap between two disconnected ranges, or
-/// `None` when either input is empty or their union has no gap.
+/// `Some(bounds)` for a gap with a nonempty boundary pair, or `None` when
+/// either input is empty or their union has no gap under the module's
+/// endpoint-order semantics. A discrete domain may have no value satisfying
+/// the gap bounds.
 ///
 /// # Examples
 ///

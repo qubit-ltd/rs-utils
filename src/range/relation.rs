@@ -15,7 +15,8 @@ use super::internal::bounds_have_gap;
 use super::internal::compare_lower_bounds;
 use super::internal::compare_upper_bounds;
 
-/// Reports whether a standard-library range contains no values.
+/// Reports whether a range is empty under the module's
+/// [endpoint-order semantics](crate::range#endpoint-order-semantics).
 ///
 /// A range with either side unbounded is considered nonempty. A finite range
 /// is empty when its lower endpoint is greater than its upper endpoint, when
@@ -34,7 +35,9 @@ use super::internal::compare_upper_bounds;
 ///
 /// # Returns
 ///
-/// `true` when the range admits no values, or `false` otherwise.
+/// `true` when the boundary pair is empty under the module's endpoint-order
+/// semantics, or `false` otherwise. This does not determine whether any value
+/// in a discrete `T` domain satisfies the bounds.
 ///
 /// # Examples
 ///
@@ -57,11 +60,13 @@ where
     bounds_are_empty(range.start_bound(), range.end_bound())
 }
 
-/// Reports whether every value in `inner` is also contained by `outer`.
+/// Reports whether `inner` is enclosed by `outer` under the module's
+/// [endpoint-order semantics](crate::range#endpoint-order-semantics).
 ///
-/// This function uses set semantics: every range encloses an empty range, and
-/// an empty range encloses only another empty range. Open, closed, and
-/// unbounded endpoints are compared without converting their values.
+/// Under the module's endpoint-order semantics, every range encloses an empty
+/// boundary pair, and an empty boundary pair encloses only another empty one.
+/// Open, closed, and unbounded endpoints are compared without converting their
+/// values.
 ///
 /// # Type Parameters
 ///
@@ -76,7 +81,9 @@ where
 ///
 /// # Returns
 ///
-/// `true` when `inner` is a subset of `outer`, or `false` otherwise.
+/// `true` when the boundary representation of `inner` is enclosed by `outer`,
+/// or `false` otherwise. For discrete domains, this does not search for
+/// representable values.
 ///
 /// # Examples
 ///
@@ -103,7 +110,8 @@ where
         && compare_upper_bounds(outer.end_bound(), inner.end_bound()) != Ordering::Less
 }
 
-/// Reports whether two ranges share at least one value.
+/// Reports whether two ranges overlap under the module's
+/// [endpoint-order semantics](crate::range#endpoint-order-semantics).
 ///
 /// Empty ranges never overlap. The operation is symmetric and supports any
 /// combination of standard and arbitrary [`RangeBounds`] implementations.
@@ -121,8 +129,9 @@ where
 ///
 /// # Returns
 ///
-/// `true` when the intersection contains at least one value, or `false` when
-/// the intersection is empty.
+/// `true` when the intersection boundary pair is nonempty under the module's
+/// endpoint-order semantics, or `false` when it is empty. This does not
+/// guarantee a satisfying value in a discrete domain.
 ///
 /// # Examples
 ///
@@ -155,12 +164,16 @@ where
     !bounds_are_empty(lower, upper)
 }
 
-/// Reports whether the union of two ranges can be represented by one range.
+/// Reports whether the union of two ranges can be represented by one range
+/// under the module's [endpoint-order
+/// semantics](crate::range#endpoint-order-semantics).
 ///
 /// Overlapping ranges are connected. Non-overlapping ranges that meet at the
 /// same endpoint are connected when at least one side includes that endpoint.
-/// Under set semantics, an empty range is connected to every range because it
-/// does not change the other range's union.
+/// Discrete adjacency is not recognized as connectivity.
+/// Under the module's endpoint-order semantics, an empty boundary pair is
+/// connected to every range because it does not change the union's boundary
+/// representation.
 ///
 /// # Type Parameters
 ///
@@ -175,7 +188,8 @@ where
 ///
 /// # Returns
 ///
-/// `true` when the union has no gap, or `false` otherwise.
+/// `true` when the boundary representations have no gap, or `false` otherwise.
+/// Discrete adjacency does not change this result.
 ///
 /// # Examples
 ///

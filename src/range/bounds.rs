@@ -12,6 +12,10 @@
 /// The first element is the lower bound and the second is the upper bound.
 /// The standard library implements [`std::ops::RangeBounds`] for this tuple,
 /// so values can be passed directly to ordered collection range queries.
+/// Range operations interpret this pair using the module's
+/// [endpoint-order semantics](crate::range#endpoint-order-semantics); for a
+/// discrete endpoint domain, a nonempty pair does not guarantee a matching
+/// value exists.
 ///
 /// # Type Parameters
 ///

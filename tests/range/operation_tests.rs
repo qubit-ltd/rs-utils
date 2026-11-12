@@ -24,6 +24,12 @@ fn test_intersection_returns_owned_nonempty_bounds() {
 }
 
 #[test]
+fn test_intersection_preserves_open_adjacent_integer_bounds() {
+    let open = (Excluded(1_i32), Excluded(2_i32));
+    assert_eq!(intersection(&open, &open), Some(open));
+}
+
+#[test]
 fn test_intersection_supports_unbounded_and_arbitrary_bounds() {
     let left: Bounds<i32> = (Unbounded, Included(10));
     let right: Bounds<i32> = (Excluded(5), Unbounded);
