@@ -71,7 +71,7 @@ dependencies = [
 
 [[package]]
 name = "qubit-utils"
-version = "0.3.3"
+version = "0.3.4"
 
 [[package]]
 name = "qubit-utils-fuzz"
