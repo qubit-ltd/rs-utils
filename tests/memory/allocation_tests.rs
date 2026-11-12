@@ -124,4 +124,38 @@ mod coverage_tests {
         reset_hooks();
         try_reserve_string(&mut text, 1).expect("reset should restore ordinary reserves");
     }
+
+    #[test]
+    fn test_shared_reserve_counter_interleaves_string_and_vec() {
+        for string_first in [true, false] {
+            reset_hooks();
+            coverage_fail_reserve_after(1);
+            let mut text = String::new();
+            let mut values = Vec::<u8>::new();
+            if string_first {
+                try_reserve_string(&mut text, 1).unwrap();
+                assert!(try_reserve_vec(&mut values, 1).is_err());
+            } else {
+                try_reserve_vec(&mut values, 1).unwrap();
+                assert!(try_reserve_string(&mut text, 1).is_err());
+            }
+            try_reserve_string(&mut text, 1).unwrap();
+            try_reserve_vec(&mut values, 1).unwrap();
+            reset_hooks();
+        }
+    }
+
+    #[test]
+    fn test_string_specific_failure_preserves_shared_counter() {
+        reset_hooks();
+        let mut text = String::new();
+        let mut values = Vec::<u8>::new();
+        coverage_fail_next_reserve();
+        coverage_fail_next_string_reserve();
+        assert!(try_reserve_string(&mut text, 1).is_err());
+        assert!(try_reserve_vec(&mut values, 1).is_err());
+        try_reserve_string(&mut text, 1).unwrap();
+        try_reserve_vec(&mut values, 1).unwrap();
+        reset_hooks();
+    }
 }

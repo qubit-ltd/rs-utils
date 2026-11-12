@@ -341,17 +341,21 @@ impl UncheckedSlice {
     ///
     /// ```compile_fail
     /// use qubit_utils::UncheckedSlice;
-    /// use std::num::NonZeroUsize;
+    /// let bytes = [0_u8; 16];
+    /// let _ = unsafe { UncheckedSlice::read_ne_unaligned::<bool>(&bytes, 0) };
+    /// ```
     ///
-    /// let bytes = [0_u8; 4];
+    /// ```compile_fail
+    /// use qubit_utils::UncheckedSlice;
+    /// let bytes = [0_u8; 16];
+    /// let _ = unsafe { UncheckedSlice::read_ne_unaligned::<char>(&bytes, 0) };
+    /// ```
+    ///
+    /// ```compile_fail
+    /// use qubit_utils::UncheckedSlice;
+    /// let bytes = [0_u8; 16];
     /// let _ = unsafe {
-    ///     UncheckedSlice::read_ne_unaligned::<bool>(&bytes, 0)
-    /// };
-    /// let _ = unsafe {
-    ///     UncheckedSlice::read_ne_unaligned::<char>(&bytes, 0)
-    /// };
-    /// let _ = unsafe {
-    ///     UncheckedSlice::read_ne_unaligned::<NonZeroUsize>(&bytes, 0)
+    ///     UncheckedSlice::read_ne_unaligned::<std::num::NonZeroUsize>(&bytes, 0)
     /// };
     /// ```
     #[must_use]
@@ -390,13 +394,35 @@ impl UncheckedSlice {
     ///
     /// The caller must guarantee that `index..index + size_of::<T>()` is a
     /// valid writable range inside `output` and that the addition does not
-    /// overflow. The complete object representation of `value`, including any
-    /// padding bytes, must be initialized and valid to store in and later
-    /// observe through the destination byte slice.
+    /// overflow. The sealed [`AnyBitPattern`] bound guarantees a valid, fully
+    /// initialized representation without padding.
     ///
-    /// `T: Copy` does not guarantee initialized padding or unrestricted
-    /// bytewise representation. Types containing padding, references, or
-    /// pointers require additional justification from the caller.
+    /// The public API intentionally rejects types whose every bit pattern is
+    /// not a valid value:
+    ///
+    /// ```compile_fail
+    /// use qubit_utils::UncheckedSlice;
+    /// let mut bytes = [0_u8; 16];
+    /// unsafe { UncheckedSlice::write_ne_unaligned::<bool>(&mut bytes, 0, false) };
+    /// ```
+    ///
+    /// ```compile_fail
+    /// use qubit_utils::UncheckedSlice;
+    /// let mut bytes = [0_u8; 16];
+    /// unsafe { UncheckedSlice::write_ne_unaligned::<char>(&mut bytes, 0, 'a') };
+    /// ```
+    ///
+    /// ```compile_fail
+    /// use qubit_utils::UncheckedSlice;
+    /// let mut bytes = [0_u8; 16];
+    /// unsafe {
+    ///     UncheckedSlice::write_ne_unaligned::<std::num::NonZeroUsize>(
+    ///         &mut bytes,
+    ///         0,
+    ///         std::num::NonZeroUsize::new(1).unwrap(),
+    ///     )
+    /// };
+    /// ```
     #[inline(always)]
     pub unsafe fn write_ne_unaligned<T: AnyBitPattern>(output: &mut [u8], index: usize, value: T) {
         debug_assert!(

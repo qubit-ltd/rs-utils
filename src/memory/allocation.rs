@@ -34,18 +34,21 @@ pub fn allocation_error(error: TryReserveError) -> Error {
 
 #[cfg(coverage)]
 thread_local! {
-    /// Successful vector reserve calls allowed before the injected failure.
+    /// Shared per-thread reserve attempts allowed before one injected failure.
     static COVERAGE_RESERVE_FAIL_AFTER: Cell<usize> = const { Cell::new(usize::MAX) };
-    /// Largest vector reserve request allowed by the coverage hook.
+    /// Largest Vec or String reserve request allowed by the coverage hook.
     static COVERAGE_RESERVE_MAX_ADDITIONAL: Cell<usize> = const { Cell::new(usize::MAX) };
     /// Whether the next string reserve request should fail.
     static COVERAGE_FAIL_NEXT_STRING_RESERVE: Cell<bool> = const { Cell::new(false) };
 }
 
-/// Makes the next [`try_reserve_vec`] call fail.
+/// Makes the next Vec or String reserve attempt fail.
 ///
 /// Coverage-only helper for exercising allocation error propagation paths that
-/// are impractical to trigger with ordinary test inputs.
+/// are impractical to trigger with ordinary test inputs. The hook is local to
+/// the current thread and is shared by [`try_reserve_vec`] and
+/// [`try_reserve_string`]. It counts attempts that pass the maximum-request
+/// check; the counter is decremented before the real reserve call.
 #[doc(hidden)]
 #[inline(always)]
 #[cfg(coverage)]
@@ -53,15 +56,19 @@ pub fn coverage_fail_next_reserve() {
     COVERAGE_RESERVE_FAIL_AFTER.with(|state| state.set(0));
 }
 
-/// Makes a later reserve call fail after the given number of successful tries.
+/// Makes a later Vec or String reserve attempt fail after the given number of
+/// attempts pass the maximum-request check.
 ///
-/// A value of `0` fails on the next reserve call. A value of `1` lets one
-/// reserve succeed and fails on the following call.
+/// The counter is shared by Vec and String reserves on the current thread and
+/// is decremented before each real reserve call. A value of `0` fails on the
+/// next eligible reserve attempt. Once the injected failure occurs, this hook
+/// resets to its disabled state.
 ///
 /// # Parameters
 ///
-/// - `successful_attempts`: Number of reserve calls allowed to succeed before
-///   the injected failure.
+/// - `successful_attempts`: Number of eligible reserve attempts allowed to
+///   reach the real reserve operation before the injected failure. The real
+///   allocation can still fail independently.
 #[doc(hidden)]
 #[inline(always)]
 #[cfg(coverage)]
@@ -69,10 +76,13 @@ pub fn coverage_fail_reserve_after(successful_attempts: usize) {
     COVERAGE_RESERVE_FAIL_AFTER.with(|state| state.set(successful_attempts));
 }
 
-/// Fails reserve calls that request more than `max_additional` elements.
+/// Fails Vec or String reserve calls that request more than `max_additional`
+/// elements or bytes, respectively.
 ///
 /// Coverage-only helper for verifying that bounded operations size temporary
-/// allocations from their active limits.
+/// allocations from their active limits. This per-thread limit applies to
+/// both Vec and String reserves and remains active until
+/// [`coverage_reset_reserve_hooks`] is called.
 ///
 /// # Parameters
 ///
@@ -84,8 +94,8 @@ pub fn coverage_fail_reserve_above(max_additional: usize) {
     COVERAGE_RESERVE_MAX_ADDITIONAL.with(|state| state.set(max_additional));
 }
 
-/// Makes the next [`try_reserve_string`] call fail without affecting vector
-/// reserve calls.
+/// Makes the next [`try_reserve_string`] call fail without consuming the
+/// shared Vec/String reserve-attempt counter.
 #[doc(hidden)]
 #[inline(always)]
 #[cfg(coverage)]
@@ -216,7 +226,8 @@ pub fn try_reserve_string(output: &mut String, additional: usize) -> std::result
     output.try_reserve(additional)
 }
 
-/// Creates a vector with the requested length and initial value.
+/// Creates a vector with the requested length and initial value. Only
+/// reserving the outer vector storage is fallible through this result.
 ///
 /// # Type Parameters
 ///
@@ -233,8 +244,11 @@ pub fn try_reserve_string(output: &mut String, additional: usize) -> std::result
 ///
 /// # Errors
 ///
-/// Returns [`ErrorKind::OutOfMemory`] if the allocation request fails or the
-/// requested vector length exceeds the supported capacity.
+/// Returns [`ErrorKind::OutOfMemory`] if `Vec::try_reserve` for the outer
+/// vector storage fails or the requested vector length exceeds the supported
+/// capacity. Allocations and other side effects performed by `T::clone` are
+/// outside this guarantee; their allocation failures are not converted into
+/// the returned I/O error.
 ///
 /// # Panics
 ///
