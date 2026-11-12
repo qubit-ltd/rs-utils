@@ -58,7 +58,7 @@ default dependency surface small.
 
 ## Current Status
 
-The 0.3.0 crate provides several reusable utility APIs:
+The current version provides several reusable utility APIs:
 
 - standard-range relationships and algebra (`is_empty`, `encloses`, `overlaps`,
   `is_connected`, `intersection`, `span`, `gap`, and `compare`),

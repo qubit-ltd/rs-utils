@@ -55,7 +55,7 @@ crate 后维护成本会持续上升。`qubit-utils` 集中维护 Qubit 项目�
 
 ## 当前状态
 
-0.3.0 版本提供以下可复用 API：
+当前版本提供以下可复用 API：
 
 - 标准区间的关系判断与代数运算：`is_empty`、`encloses`、`overlaps`、
   `is_connected`、`intersection`、`span`、`gap` 和 `compare`；
